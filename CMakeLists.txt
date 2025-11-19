@@ -18,6 +18,9 @@ find_package(nlohmann_json CONFIG REQUIRED)
 # --- SQLite3 via vcpkg ---
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
+# --- OpenSSL ---
+find_package(OpenSSL REQUIRED)
+
 # --- Source files ---
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
@@ -25,10 +28,12 @@ file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # --- Link libraries ---
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} 
     Boost::beast
     nlohmann_json::nlohmann_json
     unofficial::sqlite3::sqlite3
+    OpenSSL::SSL
+    OpenSSL::Crypto
 )
 
 #cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -G "Visual Studio 17 2022" -A x64 (to init)
