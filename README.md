@@ -2,15 +2,15 @@
 │      WebSocket In      │
 │  (real-time data feed) │
 └─────────────┬──────────┘
-              │ raw JSON / tick data
+              │ raw JSON
               ▼
 ┌────────────────────────┐
-│        Parser           │
-│  - validate message     │
-│  - extract fields       │
-│  - convert types        │
+│        Parser          │
+│  - extract fields      │
+│  - convert types       │
+│  - push data into queue│
 └─────────────┬──────────┘
-              │ normalized tick struct
+              │ candle data
               ▼
 ┌────────────────────────┐
 │      Aggregator        │

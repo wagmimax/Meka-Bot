@@ -5,6 +5,7 @@
 #include <thread>
 #include <iostream>
 #include <string>
+#include "Parser.h"
 
 template <typename T>
 class ConcurrentQueue
@@ -22,7 +23,7 @@ public:
         std::unique_lock<std::mutex> lock(m_);
         cv_.wait(lock, [this]{ return !q_.empty(); });
 
-        T value = q_.front();
+        T value = std::move(q_.front());
         q_.pop();
         return value;
     };
@@ -34,3 +35,4 @@ private:
 };
 
 extern ConcurrentQueue<std::string> rawData;
+extern ConcurrentQueue<CandleData> candleData;

@@ -1,4 +1,5 @@
 #include<WebSocketClient.h>
+#include<ConcurrentQueue.h>
 
 WebSocketClient::WebSocketClient(const std::string& host, const std::string& port, const std::string& path): 
 host_(host),
@@ -27,7 +28,7 @@ void WebSocketClient::connect()
 
     ws_.next_layer().handshake(boost::asio::ssl::stream_base::client);
 
-    // Ping/pong handler
+    // binance sends a ping every 20 seconds
     ws_.control_callback(
         [&](boost::beast::websocket::frame_type frame_type,
             boost::beast::string_view payload)
@@ -52,8 +53,9 @@ void WebSocketClient::run()
         buffer_.consume(buffer_.size());      
 
         ws_.read(buffer_);                  
-        std::string msg = boost::beast::buffers_to_string(buffer_.data());
+        std::string stringJSON = boost::beast::buffers_to_string(buffer_.data());
 
-        std::cout << msg << "\n";
+        rawData.push(stringJSON);
+        std::cout << "data pushed" << std::endl;
     }
 }
