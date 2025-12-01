@@ -10,7 +10,7 @@ void parseData()
 
     while(true)
     {
-        rawJSON = rawData.pop();
+        rawJSON = rawData.popCandle();
         json = nlohmann::json::parse(rawJSON);
         const auto& k = json["k"]; // all data important data is in "k" object
 
@@ -20,7 +20,7 @@ void parseData()
         string high = k["h"];
         string low = k["l"];
         string volume = k["q"];
-        string closed = k["x"];
+        bool closed = k["x"];
         string interval = k["i"];
 
         CandleData candle(ticker, stod(open), stod(close), stod(high), stod(low), stod(volume), closed, interval);

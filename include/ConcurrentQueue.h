@@ -18,7 +18,7 @@ public:
         cv_.notify_one();
     };
 
-    T pop()
+    T popCandle()
     {
         std::unique_lock<std::mutex> lock(m_);
         cv_.wait(lock, [this]{ return !q_.empty(); });

@@ -12,11 +12,11 @@ struct CandleData
     double high;
     double low;
     double volume;
-    std::string closed;
+    bool closed;
     std::string interval;
 
     CandleData(const std::string& ticker, double open, double close,
-        double high, double low, double volume, const std::string& closed, const std::string& interval):
+        double high, double low, double volume, bool closed, const std::string& interval):
         ticker(ticker), open(open), close(close), high(high), low(low), volume(volume), closed(closed), interval(interval) {}
 };
 
