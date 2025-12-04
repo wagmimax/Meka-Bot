@@ -10,8 +10,7 @@ void parseData()
 
     while(true)
     {
-        rawJSON = rawData.pop();
-        
+        rawJSON = rawData.popValue();
         try
         {
             json = nlohmann::json::parse(rawJSON);

@@ -14,6 +14,9 @@ struct CandleData
     double volume;
     std::string startTime;
 
+    CandleData() 
+        : ticker(""), open(-1), close(-1), high(-1), low(-1), volume(-1), startTime("") {}
+
     CandleData(const std::string& ticker, double open, double close,
         double high, double low, double volume, const std::string& startTime):
         ticker(ticker), open(open), close(close), high(high), low(low), volume(volume), startTime(startTime) {}

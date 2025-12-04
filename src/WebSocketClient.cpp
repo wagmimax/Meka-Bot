@@ -54,7 +54,7 @@ void WebSocketClient::connect()
 void WebSocketClient::run()
 {
     connect();
-        std::cout << "Connected successfully! Waiting for data...\n";
+    std::cout << "Connected successfully! Waiting for data...\n";
 
     while(true)
     {

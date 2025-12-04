@@ -18,7 +18,7 @@ public:
         cv_.notify_one();
     };
 
-    T pop()
+    T popValue()
     {
         std::unique_lock<std::mutex> lock(m_);
         cv_.wait(lock, [this]{ return !q_.empty(); });
@@ -27,6 +27,15 @@ public:
         q_.pop();
         return value;
     };
+
+    void clearData()
+    {
+        std::lock_guard<std::mutex> lock(m_);
+        while(!q_.empty())
+        {
+            q_.pop();
+        }
+    }
 
 private:
     std::mutex m_;
