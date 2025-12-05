@@ -8,6 +8,11 @@ void Aggregate()
     candles.emplace("ETH", CandleData("ETH", -1, -1, -1, -1, -1, "temp"));
     candles.emplace("SOL", CandleData("SOL", -1, -1, -1, -1, -1, "temp"));
 
+    std::unordered_map<std::string, std::string> lastTimestamp;
+    lastTimestamp["BTC"] = "";
+    lastTimestamp["ETH"] = "";
+    lastTimestamp["SOL"] = "";
+
     while(true)
     {
         TradeData currentTrade = tradeData.popValue();
@@ -15,16 +20,18 @@ void Aggregate()
         std::string ticker = currentTrade.ticker.substr(0, 3);
         std::string currentMinute = currentTrade.time.substr(14, 2);
 
-        //coinbase tends to send trades that happened a minute ago. ignore them
-        if (candles.at(ticker).startTime != "temp" && currentMinute < candles.at(ticker).startTime)
-            if(!(candles.at(ticker).startTime == "59" && currentMinute == "00")) //cover edge case: MM wraps to 00 after hitting the hour mark
-                continue;
+        //coinbase sends old trade data sometimes. needs to be ignored
+        if (!lastTimestamp[ticker].empty() && currentTrade.time < lastTimestamp[ticker])
+            continue;
+        lastTimestamp[ticker] = currentTrade.time;
+
 
         //initialize new candle when minute changes
         if(candles.at(ticker).startTime != currentMinute)
         {
             if(candles.at(ticker).startTime != "temp")
             {
+                writeData(candles.at(ticker));
                 std::cout << candles.at(ticker).startTime << " Candle Closed. OHLC: " << candles.at(ticker).open 
                     << " High: " << candles.at(ticker).high << " Low: " << candles.at(ticker).low 
                     << " Close: " << candles.at(ticker).close << std::endl;
