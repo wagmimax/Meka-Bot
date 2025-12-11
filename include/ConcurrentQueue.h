@@ -45,3 +45,4 @@ private:
 
 extern ConcurrentQueue<std::string> rawData;
 extern ConcurrentQueue<TradeData> tradeData;
+extern ConcurrentQueue<CandleData> candleData;

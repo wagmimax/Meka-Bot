@@ -13,14 +13,14 @@ struct CandleData
     double low;
     double volume;
     std::string timestamp;
-    std::string startTime;
+    std::string minute;
 
     CandleData() 
-        : ticker(""), open(-1), close(-1), high(-1), low(-1), volume(-1), timestamp(""), startTime("") {}
+        : ticker(""), open(-1), close(-1), high(-1), low(-1), volume(-1), timestamp(""), minute("") {}
 
     CandleData(const std::string& ticker, double open, double close,
-        double high, double low, double volume, const std::string& timestamp, const std::string& startTime):
-        ticker(ticker), open(open), close(close), high(high), low(low), volume(volume), timestamp(timestamp), startTime(startTime) {}
+        double high, double low, double volume, const std::string& timestamp, const std::string& minute):
+        ticker(ticker), open(open), close(close), high(high), low(low), volume(volume), timestamp(timestamp), minute(minute) {}
 };
 
 struct TradeData

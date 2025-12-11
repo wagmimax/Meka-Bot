@@ -27,12 +27,12 @@ void Aggregate()
 
 
         //initialize new candle when minute changes
-        if(candles.at(ticker).startTime != currentMinute)
+        if(candles.at(ticker).minute != currentMinute)
         {
-            if(candles.at(ticker).startTime != "temp")
+            if(candles.at(ticker).minute != "temp")
             {
                 writeData(candles.at(ticker));
-                std::cout << candles.at(ticker).startTime << " Candle Closed. OHLC: " << candles.at(ticker).open 
+                std::cout << candles.at(ticker).minute << " Candle Closed. OHLC: " << candles.at(ticker).open 
                     << " High: " << candles.at(ticker).high << " Low: " << candles.at(ticker).low 
                     << " Close: " << candles.at(ticker).close << " Timestamp: " << candles.at(ticker).timestamp << std::endl;
             }
@@ -42,7 +42,7 @@ void Aggregate()
             candles[ticker].low = currentTrade.price;
             candles[ticker].close = currentTrade.price;
             candles[ticker].volume = 0;
-            candles[ticker].startTime = currentMinute;
+            candles[ticker].minute = currentMinute;
             candles[ticker].timestamp = currentTrade.time;
         }
 

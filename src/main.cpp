@@ -4,6 +4,7 @@
 #include<thread>
 #include<Database.h>
 #include<Aggregator.h>
+#include<IPC.h>
 
 int main() {
     
