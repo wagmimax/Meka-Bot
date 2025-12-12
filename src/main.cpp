@@ -13,6 +13,8 @@ int main() {
     "443",
     "/ws/v1");
 
+    NamedPipe server;
+
     std::vector<std::string> pairs = {"BTC", "SOL", "ETH"};
     initTables(pairs);
 
@@ -25,8 +27,10 @@ int main() {
 
     std::thread parseWorker(parseData);
     std::thread aggregateWorker(Aggregate);
+    std::thread pipeWorker(&NamedPipe::sendData, &server);
 
     socketWorker.join();
     parseWorker.join();
     aggregateWorker.join();
+    pipeWorker.join();
 }

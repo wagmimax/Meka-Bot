@@ -54,5 +54,7 @@ void Aggregate()
             candles[ticker].high = currentTrade.price;
         else if(candles.at(ticker).low > currentTrade.price)
             candles[ticker].low = currentTrade.price; 
+
+        candleData.push(candles.at(ticker));
     }
 }

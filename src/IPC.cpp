@@ -12,12 +12,22 @@ int NamedPipe::createConnection()
         std::cout << "Error making pipe: " << GetLastError();
         return -1;
     }
-     
-    Connected = ConnectNamedPipe(hPipe, NULL);
-    system("python ../../../src/Charting.py"); //start up other process, which will be client
 
-    if(!Connected) CloseHandle(hPipe);
-    else std::cout << "Pipe connected\n";
+    //start up other process, which will be client
+    std::system("start python ../../../src/IPC.py");
+    Connected = ConnectNamedPipe(hPipe, NULL);
+    
+
+    if(!Connected) 
+    {
+        CloseHandle(hPipe);
+        std::cout << "Pipe connection failed\n";
+        return -1;
+    }
+    else
+    {
+        std::cout << "Pipe connected\n";
+    }
     
     return 1;
 }
@@ -28,6 +38,7 @@ void NamedPipe::sendData()
     std::stringstream message;
     DWORD bytesWritten;
 
+    int success = createConnection();
     while(true)
     {
         currentCandle = candleData.popValue();
