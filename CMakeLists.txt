@@ -40,8 +40,6 @@ target_link_libraries(${PROJECT_NAME}
     unofficial::sqlite3::sqlite3
     OpenSSL::SSL
     OpenSSL::Crypto
-    imgui::imgui
-    implot::implot
     ws2_32
 )
 

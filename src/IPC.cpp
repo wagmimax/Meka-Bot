@@ -48,7 +48,8 @@ void NamedPipe::sendData()
                 << currentCandle.low << " "
                 << currentCandle.close << " "
                 << currentCandle.volume << " "
-                << currentCandle.timestamp << "\n";
+                << currentCandle.timestamp << " "
+                << currentCandle.minute << "\n";
         std::string messageOut = message.str();
 
         WriteFile(hPipe, messageOut.c_str(), messageOut.size(), &bytesWritten, NULL); 
