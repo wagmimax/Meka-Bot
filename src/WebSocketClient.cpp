@@ -63,7 +63,9 @@ void WebSocketClient::run()
         ws_.read(buffer_);                  
         std::string stringJSON = boost::beast::buffers_to_string(buffer_.data());
 
-        rawData.push(stringJSON);
+        TimestampedMessage tm(stringJSON, std::chrono::high_resolution_clock::now());
+
+        rawData.push(tm);
         //std::cout << "raw data pushed" << std::endl;
     }
 }

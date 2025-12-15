@@ -1,12 +1,12 @@
 #include<Aggregator.h>
 
-void Aggregate()
+void Aggregate(Database& sqliteDB)
 {
     std::unordered_map<std::string, CandleData> candles;
 
-    candles.emplace("BTC", CandleData("BTC", -1, -1, -1, -1, -1, "temp", "temp"));
-    candles.emplace("ETH", CandleData("ETH", -1, -1, -1, -1, -1, "temp", "temp"));
-    candles.emplace("SOL", CandleData("SOL", -1, -1, -1, -1, -1, "temp", "temp"));
+    candles.emplace("BTC", CandleData("BTC", -1, -1, -1, -1, -1, "temp", "temp", std::chrono::high_resolution_clock::now()));
+    candles.emplace("ETH", CandleData("ETH", -1, -1, -1, -1, -1, "temp", "temp", std::chrono::high_resolution_clock::now()));
+    candles.emplace("SOL", CandleData("SOL", -1, -1, -1, -1, -1, "temp", "temp", std::chrono::high_resolution_clock::now()));
 
     std::unordered_map<std::string, std::string> lastTimestamp;
     lastTimestamp["BTC"] = "";
@@ -16,6 +16,9 @@ void Aggregate()
     while(true)
     {
         TradeData currentTrade = tradeData.popValue();
+
+        //auto latency = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - currentTrade.latencyTimestamp).count();
+        //std::cout << "Socket -> Aggregator: " << latency << "\n";
 
         std::string ticker = currentTrade.ticker.substr(0, 3);
         std::string currentMinute = currentTrade.time.substr(14, 2);
@@ -31,7 +34,8 @@ void Aggregate()
         {
             if(candles.at(ticker).minute != "temp")
             {
-                writeData(candles.at(ticker));
+                candles[ticker].latencyTimestamp = currentTrade.latencyTimestamp;
+                sqliteDB.writeData(candles.at(ticker));
                 std::cout << candles.at(ticker).minute << " Candle Closed. OHLC: " << candles.at(ticker).open 
                     << " High: " << candles.at(ticker).high << " Low: " << candles.at(ticker).low 
                     << " Close: " << candles.at(ticker).close << " Timestamp: " << candles.at(ticker).timestamp << std::endl;

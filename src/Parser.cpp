@@ -4,16 +4,15 @@
 void parseData()
 {
     std::cout << "Begin parsing" << std::endl;
-    std::string rawJSON;
     nlohmann::json json;
     using namespace std;
 
     while(true)
     {
-        rawJSON = rawData.popValue();
+        TimestampedMessage rawJSON = rawData.popValue();
         try
         {
-            json = nlohmann::json::parse(rawJSON);
+            json = nlohmann::json::parse(rawJSON.json);
             if(!json.contains("events") || json["events"].empty())
                 continue;
 
@@ -31,7 +30,8 @@ void parseData()
                     trade["product_id"].get<std::string>(), 
                     trade["time"].get<std::string>(), 
                     std::stod(trade["price"].get<std::string>()), 
-                    std::stod(trade["size"].get<std::string>())
+                    std::stod(trade["size"].get<std::string>()),
+                    rawJSON.latencyTimestamp
                 });
             }
         }

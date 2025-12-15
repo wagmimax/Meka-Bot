@@ -6,9 +6,10 @@
 #include <iostream>
 #include <string>
 #include "Parser.h"
+#include "moodycamel.h"
 
 template <typename T>
-class ConcurrentQueue
+class ConcurrentQueueLocked
 {
 public:
     void push(const T& value)
@@ -43,6 +44,37 @@ private:
     std::queue<T> q_;
 };
 
-extern ConcurrentQueue<std::string> rawData;
+template <typename T>
+class ConcurrentQueue
+{
+public:
+    void push(const T& value)
+    {
+        queue_.enqueue(value);
+    }
+
+    T popValue()
+    {
+        T value;
+
+        while (!queue_.try_dequeue(value))
+        {
+            std::this_thread::yield();
+        }
+        return value;
+    }
+
+    void clearData()
+    {
+        T dummy;
+        
+        while (queue_.try_dequeue(dummy)){}
+    }
+private:
+    moodycamel::ConcurrentQueue<T> queue_;
+};
+
+
+extern ConcurrentQueue<TimestampedMessage> rawData;
 extern ConcurrentQueue<TradeData> tradeData;
 extern ConcurrentQueue<CandleData> candleData;

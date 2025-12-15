@@ -14,9 +14,10 @@ int main() {
     "/ws/v1");
 
     NamedPipe server;
+    Database sqliteDB;
 
     std::vector<std::string> pairs = {"BTC", "SOL", "ETH"};
-    initTables(pairs);
+    sqliteDB.initDB(pairs);
 
     std::thread socketWorker(&WebSocketClient::run, &coinbaseStream);
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -26,7 +27,7 @@ int main() {
     tradeData.clearData();
 
     std::thread parseWorker(parseData);
-    std::thread aggregateWorker(Aggregate);
+    std::thread aggregateWorker(Aggregate, std::ref(sqliteDB));
     std::thread pipeWorker(&NamedPipe::sendData, &server);
 
     socketWorker.join();

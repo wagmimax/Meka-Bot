@@ -1,5 +1,5 @@
 #include<ConcurrentQueue.h>
 
-ConcurrentQueue<std::string> rawData;
+ConcurrentQueue<TimestampedMessage> rawData;
 ConcurrentQueue<TradeData> tradeData;
 ConcurrentQueue<CandleData> candleData;

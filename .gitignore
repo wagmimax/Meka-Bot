@@ -14,10 +14,16 @@ Makefile
 Thumbs.db
 
 # SQLite database
-/data/market.db
+/data/*.db
 
 #local build script
 build.cmd
 
 #build folder
 build/
+
+#vscode
+.vscode/
+
+#python
+**/__pycache__

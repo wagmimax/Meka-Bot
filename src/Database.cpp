@@ -1,15 +1,23 @@
 #include<Database.h>
 
-void initTables(std::vector<std::string>& pairs)
+void Database::initDB(std::vector<std::string>& pairs)
 {
     std::string currentPair;
-    sqlite3* db;
-    sqlite3_open("../data/Database.db", &db); 
 
     if (sqlite3_open("../../../data/Database.db", &db) != SQLITE_OK) 
     {
         std::cout << "Failed to open database.\n";
         return;
+    }
+
+    char* err_msg = nullptr;
+    sqlite3_exec(db, "PRAGMA journal_mode = WAL", nullptr, nullptr, &err_msg);
+    sqlite3_exec(db, "PRAGMA synchronous = NORMAL", nullptr, nullptr, &err_msg);
+
+    if (err_msg) 
+    {
+        std::cerr << "SQLite error: " << err_msg << std::endl;
+        sqlite3_free(err_msg);
     }
 
     for(int i = 0; i < pairs.size(); i++)
@@ -35,14 +43,11 @@ void initTables(std::vector<std::string>& pairs)
         else
             std::cout << "Successfully created table" << std::endl;
     }
-
-    sqlite3_close(db);
 }
 
-void writeData(CandleData candle)
+void Database::writeData(CandleData candle)
 {
-    sqlite3* db;
-    sqlite3_open("../../../data/Database.db", &db);
+    auto t1 = std::chrono::high_resolution_clock::now();
 
     std::string sql = "INSERT INTO " + candle.ticker + " (timestamp, open, high, low, close, volume) "
         "VALUES ('"
@@ -62,7 +67,16 @@ void writeData(CandleData candle)
         sqlite3_free(err);
     }
     else
-        std::cout << "Wrote to database" << std::endl;
-
-    sqlite3_close(db);
+    {
+        //for recording standalone database write latency
+        auto t2 = std::chrono::high_resolution_clock::now();
+        auto write_latency = std::chrono::duration_cast<std::chrono::microseconds>(
+        t2 - t1
+    ).count();
+    
+        //for socket -> database latency
+        std::cout << "DB Write: " << write_latency << " μs" << std::endl;
+        auto latency = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - candle.latencyTimestamp).count();
+        std::cout << "Socket -> Database Latency: " << latency << "\n";
+    }
 }
