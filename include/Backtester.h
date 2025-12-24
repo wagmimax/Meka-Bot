@@ -4,8 +4,9 @@
 class Backtester
 {
 public:
-    
+
+    void run(Strategy& strategy);
 
 private:
-
+    PaperAccount paperAccount;
 };
