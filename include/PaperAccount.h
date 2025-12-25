@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-#include <Parser.h>
+#include "Parser.h"
+#include "Strategy.h"
 
 class PaperAccount
 {
@@ -10,17 +11,18 @@ public:
     {}
 
     //setters
-    void setBalance(double balance) { balance_ = balance; }
-    void setLeverage(int leverage) { leverage_ = leverage; }
+    void setBalance(double balance)     { balance_ = balance; }
+    void setLeverage(int leverage)      { leverage_ = leverage; }
     void setMakerFees(double makerFees) { makerFees_ = makerFees; }
     void setTakerFees(double takerFees) { takerFees_ = takerFees; }
 
     //getters
-    double getBalance() { return balance_; };
-    int getLeverage() { return leverage_; }
-    double getMakerFees() { return makerFees_; }
-    double getTakerFees() { return takerFees_; }
+    double getBalance() const           { return balance_; }
+    int getLeverage() const             { return leverage_; }
+    double getMakerFees() const         { return makerFees_; }
+    double getTakerFees() const         { return takerFees_; }
 
+    void enterPosition(Trade);
     void checkOpenPositions(CandleData);
 private:
     struct Position
@@ -32,11 +34,12 @@ private:
 
     double calculatePosition(const double& stopLoss);
 
+    std::vector<Position> positions;
     double balance_;
-    int leverage_;
     double makerFees_; 
     double takerFees_; 
+    int leverage_;
     bool inLong_;
     bool inShort_;
-    std::vector<Position> positions;
+    
 };

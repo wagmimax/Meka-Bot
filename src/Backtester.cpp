@@ -2,18 +2,55 @@
 
 void Backtester::run(Strategy& strategy)
 {
-
-    while(true)
+    std::ifstream csv("../../../data/BTCUSDT-5m-2025-01.csv");
+    if(!csv.is_open())
     {
-        //parse csv
-        
+        std::cout << "Could not open file csv" << std::endl;
+        return;
+    }
+    
+    std::string row;
+
+    //column headers
+    std::getline(csv,row);
+    std::cout << row << std::endl;
+
+    while(std::getline(csv, row))
+    {
+        std::istringstream rowReader(row);
+        CandleData candle;
+        std::string field;
+
+
+        // ------------- parse csv -> store as candle ----------------
+        std::getline(rowReader, candle.timestamp, ','); //open timestamp
+
+        std::getline(rowReader, field, ',');            //open price
+        candle.open = std::stod(field);
+
+        std::getline(rowReader, field, ',');            //high price
+        candle.high = std::stod(field);
+
+        std::getline(rowReader, field, ',');            //low price
+        candle.low = std::stod(field);
+
+        std::getline(rowReader, field, ',');            //close price
+        candle.close = std::stod(field);
+
+        std::getline(rowReader, field, ',');            //volume
+        candle.volume = std::stod(field);
+        // -----------------------------------------------------------
+
+        std::cout << std::fixed << std::setprecision(2) 
+        << "Candle OHLCV: " << candle.open << " " << candle.high << " " << candle.low << " " << candle.close << " " << candle.volume << "\n"; 
+
         //run candle through strategy and receive signal
-        Trade signal = strategy.next(CandleData());
+        Trade trade = strategy.next(candle);
 
         //operate based off signal
-        if(signal.tradeIntent == TradeIntent::ENTER)
-        {
-            
-        }
+        if(trade.tradeIntent == TradeIntent::ENTER)
+            paperAccount.enterPosition(trade);
+
+        //check if candle triggers position closes
     }
 }

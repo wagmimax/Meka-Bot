@@ -1,6 +1,6 @@
 #include <Strategy.h>
 
-void SupportResistance::next(CandleData candle)
+Trade SupportResistance::next(CandleData candle)
 {
-
+    return Trade{TradeIntent::NONE, -1, -1};
 }

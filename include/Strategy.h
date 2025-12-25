@@ -20,13 +20,13 @@ struct Trade
 class Strategy
 {
 public:
-    virtual Trade next(CandleData) {std::cout << "Entity" << std::endl;};
+    virtual Trade next(CandleData) {std::cout << "Entity" << std::endl; return Trade{};};
 
 private:
     
 };
 
-class SupportResistance : Strategy
+class SupportResistance : public Strategy
 {
 public:
     Trade next(CandleData) override;

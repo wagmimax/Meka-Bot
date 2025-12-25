@@ -5,6 +5,7 @@
 #include<Database.h>
 #include<Aggregator.h>
 #include<IPC.h>
+#include<Backtester.h>
 
 typedef enum SelectedMode{NONE = 0, PIPELINE, BACKTESTER}SelectedMode;
 
@@ -54,7 +55,9 @@ int main() {
         }break;
         case BACKTESTER:
         {
-            std::cout << "test";
+            Backtester backtester;
+            SupportResistance supportResistance;
+            backtester.run(supportResistance);
         }break;
     }
 }
