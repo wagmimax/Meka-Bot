@@ -1,8 +1,94 @@
 #include<PaperAccount.h>
 
-void PaperAccount::enterPosition(Trade trade)
+void PaperAccount::enterPosition(Trade tradeSignal)
 {
-    double riskAmount = (double{2} / 100) * balance_;
-    double positionSize = riskAmount / (trade.stopLossPercent + (makerFees_ + takerFees_));
-    double finalPosition = positionSize * leverage_;
+    if(!position.active)
+    {
+        position.entryPrice = tradeSignal.entryLevel;
+        double totalFees = makerFees_ + takerFees_;
+
+        //these will help with calculating PNL later 
+        position.stopLossPercent = tradeSignal.stopLossPercent;
+        position.targetProfitPercent = (tradeSignal.stopLossPercent + totalFees)* 3;
+
+        //this ensures our position size, with fees accounted for, will always lose us our currentRisk_% of our account upon stop loss hitting
+        position.positionSize = (balance_ * (currentRisk_/100)) / ((tradeSignal.stopLossPercent + makerFees_ + takerFees_)/100);
+
+        //calculate stoploss and targetprofit price levels (1:3 Risk:Reward)
+        if(tradeSignal.tradeIntent == TradeIntent::LONG)
+        {
+            position.stopLossPrice = tradeSignal.entryLevel * (1 - (tradeSignal.stopLossPercent / 100));
+            position.targetProfitPrice = tradeSignal.entryLevel * (1 + position.targetProfitPercent/100);
+        }
+        else if(tradeSignal.tradeIntent == TradeIntent::SHORT)
+        {
+            position.stopLossPrice = tradeSignal.entryLevel * (1 + (tradeSignal.stopLossPercent / 100));
+            position.targetProfitPrice = tradeSignal.entryLevel * (1 - position.targetProfitPercent/100);
+        }
+
+
+        position.tradeType = tradeSignal.tradeIntent;
+        position.active = true;
+
+        std::cout << "IN TRADE, TP ENTRY SL: " << position.targetProfitPrice << " " << position.entryPrice << " " << position.stopLossPrice << std::endl;
+        std::cout << "STOPLOSS%: " << position.stopLossPercent << " TARGETPROFIT%: " << position.targetProfitPercent << std::endl;
+
+    }
+}
+
+void PaperAccount::checkOpenPositions(CandleData candle)
+{
+    if(position.active)
+    {
+        if(position.tradeType == TradeIntent::LONG)
+        {
+            //edgecase: if a candle is touching both tp and sl, omit the trade because we dont know which got hit first
+            if(candle.high >= position.targetProfitPrice && candle.low <= position.stopLossPrice)
+            {
+                position.active = false;
+                return;
+            }
+
+            //profit
+            if(candle.high >= position.targetProfitPrice)
+            {
+                double profit = position.positionSize * position.targetProfitPercent;
+                balance_ += profit;
+                position.active = false;
+            }
+
+            //loss
+            if(candle.low <= position.stopLossPrice)
+            {
+                double loss = position.positionSize * position.stopLossPercent;
+                balance_ -= loss;
+                position.active = false;
+            }
+        }
+        if(position.tradeType == TradeIntent::SHORT)
+        {
+            //edgecase: if a candle is touching both tp and sl, omit the trade because we dont know which got hit first
+            if(candle.low <= position.targetProfitPrice && candle.high >= position.stopLossPrice)
+            {
+                position.active = false;
+                return;
+            }
+
+            //profit
+            if(candle.low <= position.targetProfitPrice)
+            {
+                double profit = position.positionSize * position.targetProfitPercent;
+                balance_ += profit;
+                position.active = false;
+            }
+
+            //loss
+            if(candle.high >= position.stopLossPrice)
+            {
+                double loss = position.positionSize * position.stopLossPercent;
+                balance_ -= loss;
+                position.active = false;
+            }
+        }
+    }
 }

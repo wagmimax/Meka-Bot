@@ -4,7 +4,8 @@
 enum struct TradeIntent
 {
     NONE,
-    ENTER
+    LONG,
+    SHORT
 };
 
 //Every strategy must return whether it wants to enter a trade or not,

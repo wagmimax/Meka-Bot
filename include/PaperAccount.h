@@ -6,12 +6,20 @@
 class PaperAccount
 {
 public:
-    //maker and taker fees defaulted to coinbase spot trading
-    PaperAccount(): balance_(50000), leverage_(1), makerFees_(0.4), takerFees_(0.6), inLong_(false), inShort_(false)
-    {}
+    PaperAccount(): balance_(50000), leverage_(10), makerFees_(0.02), takerFees_(0.05), inLong_(false), inShort_(false), currentRisk_(2.0)
+    {riskLevels[2.0] = balance_; 
+     riskLevels[1.0] = balance_;
+     riskLevels[0.5] = balance_;}
 
     //setters
-    void setBalance(double balance)     { balance_ = balance; }
+    //DONT use setBalance() to edit your balance mid engine run
+    //PaperBank automatically manages risk, and using set balance
+    //will interfere with the risk management. Only use to set initial bal
+    void setBalance(double balance)     
+    {balance_ = balance; 
+     riskLevels[2.0] = balance; 
+     riskLevels[1.0] = balance;
+     riskLevels[0.5] = balance;}
     void setLeverage(int leverage)      { leverage_ = leverage; }
     void setMakerFees(double makerFees) { makerFees_ = makerFees; }
     void setTakerFees(double takerFees) { takerFees_ = takerFees; }
@@ -27,14 +35,21 @@ public:
 private:
     struct Position
     {
-        double entry;
-        double stopLoss;
-        double targetProfit;
+        double entryPrice;
+        double stopLossPrice;
+        double targetProfitPrice;
+        double stopLossPercent;
+        double targetProfitPercent;
+        double positionSize;
+        bool active = false;
+        TradeIntent tradeType = TradeIntent::NONE;
     };
 
-    double calculatePosition(const double& stopLoss);
+    void adjustRisk();
 
-    std::vector<Position> positions;
+    std::unordered_map<double, double> riskLevels;
+    Position position;
+    double currentRisk_;
     double balance_;
     double makerFees_; 
     double takerFees_; 
