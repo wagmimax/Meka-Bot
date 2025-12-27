@@ -31,6 +31,12 @@ private:
 class SupportResistance : public Strategy
 {
 public:
+    SupportResistance():
+    resistance({0,0,0,false}), 
+    support({std::numeric_limits<double>::max(),0,0,false}), 
+    tolerance(0.0005) 
+    {}
+
     Trade next(CandleData) override;
 private:
     struct Level
@@ -38,9 +44,11 @@ private:
         double price;
         int touches;
         int age;
+        bool active;
     };
 
     Level resistance;
     Level support;
     std::deque<CandleData> rollingWindow;
+    double tolerance;
 };

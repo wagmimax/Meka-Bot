@@ -47,23 +47,26 @@ void PaperAccount::checkOpenPositions(CandleData candle)
             if(candle.high >= position.targetProfitPrice && candle.low <= position.stopLossPrice)
             {
                 position.active = false;
+                std::cout << "EDGECASE HIT, TRADE OMITTED\n";
                 return;
             }
 
             //profit
             if(candle.high >= position.targetProfitPrice)
             {
-                double profit = position.positionSize * position.targetProfitPercent;
+                double profit = position.positionSize * position.targetProfitPercent/100;
                 balance_ += profit;
                 position.active = false;
+                std::cout << "TAKEPROFIT HIT, BALANCE: " << balance_ << " PROFIT OF " << profit << std::endl;
             }
 
             //loss
             if(candle.low <= position.stopLossPrice)
             {
-                double loss = position.positionSize * position.stopLossPercent;
+                double loss = position.positionSize * position.stopLossPercent/100;
                 balance_ -= loss;
                 position.active = false;
+                std::cout << "STOPLOSS HIT, BALANCE: " << balance_ << " LOSS OF " <<  loss << std::endl;
             }
         }
         if(position.tradeType == TradeIntent::SHORT)
@@ -72,23 +75,26 @@ void PaperAccount::checkOpenPositions(CandleData candle)
             if(candle.low <= position.targetProfitPrice && candle.high >= position.stopLossPrice)
             {
                 position.active = false;
+                std::cout << "EDGECASE HIT, TRADE OMITTED\n";
                 return;
             }
 
             //profit
             if(candle.low <= position.targetProfitPrice)
             {
-                double profit = position.positionSize * position.targetProfitPercent;
+                double profit = position.positionSize * position.targetProfitPercent/100;
                 balance_ += profit;
                 position.active = false;
+                std::cout << "TAKEPROFIT HIT, BALANCE: " << balance_ << " PROFIT OF " << profit << std::endl;
             }
 
             //loss
             if(candle.high >= position.stopLossPrice)
             {
-                double loss = position.positionSize * position.stopLossPercent;
+                double loss = position.positionSize * position.stopLossPercent/100;
                 balance_ -= loss;
                 position.active = false;
+                std::cout << "STOPLOSS HIT, BALANCE: " << balance_ << " LOSS OF " <<  loss << std::endl;
             }
         }
 

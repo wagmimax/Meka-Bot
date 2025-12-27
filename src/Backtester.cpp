@@ -41,8 +41,8 @@ void Backtester::run(Strategy& strategy)
         candle.volume = std::stod(field);
         // -----------------------------------------------------------
 
-        std::cout << std::fixed << std::setprecision(2) 
-        << "Candle OHLCV: " << candle.open << " " << candle.high << " " << candle.low << " " << candle.close << " " << candle.volume << "\n"; 
+        //std::cout << std::fixed << std::setprecision(2) 
+        //<< "Candle OHLCV: " << candle.open << " " << candle.high << " " << candle.low << " " << candle.close << " " << candle.volume << "\n"; 
 
         //run candle through strategy and receive signal
         Trade trade = strategy.next(candle);
