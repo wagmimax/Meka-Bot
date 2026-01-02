@@ -9,13 +9,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-# --- Boost (Beast) via vcpkg CONFIG mode ---
+# --- Boost Beast ---
 find_package(Boost CONFIG REQUIRED beast)
 
 # --- nlohmann_json ---
 find_package(nlohmann_json CONFIG REQUIRED)
 
-# --- SQLite3 via vcpkg ---
+# --- SQLite3 ---
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
 # --- OpenSSL ---
@@ -26,6 +26,9 @@ find_package(implot CONFIG REQUIRED)
 
 # --- imgui ---
 find_package(imgui CONFIG REQUIRED)
+
+# --- tabulate ---
+find_package(tabulate CONFIG REQUIRED)
 
 # --- Source files ---
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -40,6 +43,7 @@ target_link_libraries(${PROJECT_NAME}
     unofficial::sqlite3::sqlite3
     OpenSSL::SSL
     OpenSSL::Crypto
+    tabulate::tabulate
     ws2_32
 )
 

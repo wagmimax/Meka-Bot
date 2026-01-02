@@ -22,11 +22,15 @@ struct Trade
 class Strategy
 {
 public:
-    Strategy(): DEBUGGING_ON(false){}
+    Strategy(): DEBUGGING_ON(false) {}
+
     virtual ~Strategy() = default;
 
+    //every strategy subclass must update itself upon next candle
     virtual Trade next(const CandleData&) = 0;
 
+    void enableDebugging()  { DEBUGGING_ON = true; };
+    void disableDebugging() { DEBUGGING_ON = false; };
 protected:
     bool DEBUGGING_ON;
 };

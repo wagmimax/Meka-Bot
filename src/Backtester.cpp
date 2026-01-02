@@ -2,6 +2,27 @@
 #include<thread>
 #include<chrono>
 #include<filesystem>
+#include<tabulate\table.hpp>
+#include<format>
+
+static std::string formatBalance(double value, int precision = 2)
+{
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(precision) << value;
+    std::string s = oss.str();
+
+    auto dotPos = s.find('.');
+    int insertPosition = (dotPos == std::string::npos ? s.length() : dotPos) - 3;
+
+    while (insertPosition > 0) {
+        s.insert(insertPosition, ",");
+        insertPosition -= 3;
+    }
+
+    s.insert(0, "$");
+
+    return s;
+}
 
 void Backtester::run(Strategy& strategy)
 {
@@ -18,8 +39,8 @@ void Backtester::run(Strategy& strategy)
             std::cout << "Could not open file csv" << std::endl;
             return;
         }
-        else
-            std::cout << "Opening file: " << dirEntry.path().string() << std::endl;
+        //else
+        //    std::cout << "Opening file: " << dirEntry.path().string() << std::endl;
         
         std::string row;
 
@@ -53,9 +74,6 @@ void Backtester::run(Strategy& strategy)
             candle.volume = std::stod(field);
             // -----------------------------------------------------------
 
-            //std::cout << std::fixed << std::setprecision(2) 
-            //<< "Candle OHLCV: " << candle.open << " " << candle.high << " " << candle.low << " " << candle.close << " " << candle.volume << "\n"; 
-
             //run candle through strategy and receive signal
             Trade trade = strategy.next(candle);
 
@@ -67,15 +85,27 @@ void Backtester::run(Strategy& strategy)
             paperAccount.checkOpenPositions(candle);
         }
 
-        int wins = paperAccount.getWins();
-        int losses = paperAccount.getLosses();
-        double winrate = static_cast<double>(wins) / (wins + losses) * 100;
+        double wins = paperAccount.getWins();
+        double losses = paperAccount.getLosses();
+        double winrate = wins / (wins + losses) * 100;
+
+        std::string finalBalStr = formatBalance(paperAccount.getBalance());
+        std::string winrateStr = std::format("{:.2f}%", winrate);
+        std::string winsStr = std::format("{:}", wins);
+        std::string lossesStr = std::format("{:}", losses);
+
+        //organize metrics into a table for output
+        tabulate::Table metricsTable;
+        metricsTable.add_row({"Final Balance", "Wins", "Losses", "Winrate"});
+        metricsTable.add_row({finalBalStr, winsStr, lossesStr, winrateStr});
+        metricsTable[1][0].format().font_color
+            ((paperAccount.getBalance() >= 50000) 
+                ? tabulate::Color::green 
+                : tabulate::Color::red);
+
+        std::cout << metricsTable << std::endl;
 
         if(auto* supportresistance = dynamic_cast<SupportResistance*>(&strategy))
             supportresistance->clearWindow();
-
-        std::cout << "Final account balance: " << paperAccount.getBalance() << std::endl;
-        std::cout << "Wins: " << wins << " Losses: " << losses << std::endl;
-        std::cout << "Winrate: " << winrate << "%" << std::endl;
     }
 }
