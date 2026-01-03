@@ -2,27 +2,8 @@
 #include<thread>
 #include<chrono>
 #include<filesystem>
-#include<tabulate\table.hpp>
 #include<format>
 
-static std::string formatBalance(double value, int precision = 2)
-{
-    std::ostringstream oss;
-    oss << std::fixed << std::setprecision(precision) << value;
-    std::string s = oss.str();
-
-    auto dotPos = s.find('.');
-    int insertPosition = (dotPos == std::string::npos ? s.length() : dotPos) - 3;
-
-    while (insertPosition > 0) {
-        s.insert(insertPosition, ",");
-        insertPosition -= 3;
-    }
-
-    s.insert(0, "$");
-
-    return s;
-}
 
 void Backtester::run(Strategy& strategy)
 {
@@ -31,7 +12,7 @@ void Backtester::run(Strategy& strategy)
         if(dirEntry.path().string().substr(dirEntry.path().string().size() - 4) != ".csv")
             continue;
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(0));
         std::ifstream csv(dirEntry.path());
 
         if(!csv.is_open())
@@ -39,14 +20,12 @@ void Backtester::run(Strategy& strategy)
             std::cout << "Could not open file csv" << std::endl;
             return;
         }
-        //else
-        //    std::cout << "Opening file: " << dirEntry.path().string() << std::endl;
+        //else {std::cout << "Opening file: " << dirEntry.path().string() << std::endl;}
         
         std::string row;
 
         //column headers
         std::getline(csv,row);
-        std::cout << row << std::endl;
 
         while(std::getline(csv, row))
         {
@@ -85,27 +64,27 @@ void Backtester::run(Strategy& strategy)
             paperAccount.checkOpenPositions(candle);
         }
 
-        double wins = paperAccount.getWins();
-        double losses = paperAccount.getLosses();
-        double winrate = wins / (wins + losses) * 100;
-
-        std::string finalBalStr = formatBalance(paperAccount.getBalance());
-        std::string winrateStr = std::format("{:.2f}%", winrate);
-        std::string winsStr = std::format("{:}", wins);
-        std::string lossesStr = std::format("{:}", losses);
-
-        //organize metrics into a table for output
-        tabulate::Table metricsTable;
-        metricsTable.add_row({"Final Balance", "Wins", "Losses", "Winrate"});
-        metricsTable.add_row({finalBalStr, winsStr, lossesStr, winrateStr});
-        metricsTable[1][0].format().font_color
-            ((paperAccount.getBalance() >= 50000) 
-                ? tabulate::Color::green 
-                : tabulate::Color::red);
-
-        std::cout << metricsTable << std::endl;
-
         if(auto* supportresistance = dynamic_cast<SupportResistance*>(&strategy))
             supportresistance->clearWindow();
     }
+
+    double wins = paperAccount.getWins();
+    double losses = paperAccount.getLosses();
+    double winrate = wins / (wins + losses) * 100;
+
+    std::string finalBalStr = formatBalance(paperAccount.getBalance());
+    std::string winrateStr = std::format("{:.2f}%", winrate);
+    std::string winsStr = std::to_string(static_cast<int>(wins));
+    std::string lossesStr = std::to_string(static_cast<int>(losses));
+
+    //organize metrics into a table for output
+    tabulate::Table metricsTable;
+    metricsTable.add_row({"Final Balance", "Wins", "Losses", "Winrate"});
+    metricsTable.add_row({finalBalStr, winsStr, lossesStr, winrateStr});
+    metricsTable[1][0].format().font_color
+        ((paperAccount.getBalance() >= 50000) 
+            ? tabulate::Color::green 
+            : tabulate::Color::red);
+
+    std::cout << metricsTable << std::endl;
 }

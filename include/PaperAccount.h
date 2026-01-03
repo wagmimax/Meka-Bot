@@ -2,11 +2,14 @@
 #include <vector>
 #include "Parser.h"
 #include "Strategy.h"
+#include"tabulate\table.hpp"
+
+std::string formatBalance(double value, int precision = 2);
 
 class PaperAccount
 {
 public:
-    PaperAccount(): balance_(50000), makerFees_(0.02), takerFees_(0.05), currentRisk_(2.0), RR_(3), wins(0), losses(0)
+    PaperAccount(): balance_(50000), makerFees_(0.02), takerFees_(0.05), currentRisk_(2.0), RR_(3), wins(0), losses(0), DEBUGGING_ON(false)
     {riskLevels[2.0] = balance_; 
      riskLevels[1.0] = balance_;
      riskLevels[0.5] = balance_;}
@@ -48,9 +51,10 @@ private:
     };
 
     void adjustRisk();
+    void logTrade(TradeIntent tradeType, double PNL);
 
-    std::unordered_map<double, double> riskLevels;
     Position position;
+    std::unordered_map<double, double> riskLevels;
     double currentRisk_;
     double balance_;
     double makerFees_; 
@@ -58,4 +62,5 @@ private:
     int RR_;
     int wins;
     int losses;
+    bool DEBUGGING_ON;
 };

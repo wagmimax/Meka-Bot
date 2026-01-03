@@ -1,3 +1,4 @@
+#pragma once
 #include <Strategy.h>
 
 Trade SupportResistance::next(const CandleData& candle)
