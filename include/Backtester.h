@@ -17,5 +17,11 @@ public:
     }
 
 private:
+    //user can edit backtester settings and choose which data to backtest
+    void userControl();
+
+    //use binance API to get historical candle data. stores in a temp file
+    void loadHistoricalData(const int& granularity, const std::string_view& ticker);
+
     PaperAccount paperAccount;
 };

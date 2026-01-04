@@ -2,11 +2,28 @@
 #include<thread>
 #include<chrono>
 #include<filesystem>
-#include<format>
 
+class TempPath
+{
+public:
+    TempPath()
+    {
+        path_ = std::filesystem::temp_directory_path() / "TEMP!BINANCE!CANDLES!";  
+    }
+
+    ~TempPath()
+    {
+        //std::filesystem::remove(path_);
+    }
+
+    void printPath() { std::cout << path_ << std::endl; }
+private:
+    std::filesystem::path path_;
+};
 
 void Backtester::run(Strategy& strategy)
 {
+    loadHistoricalData(5, "BNBUSDT");
     for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("../../../data"))
     {
         if(dirEntry.path().string().substr(dirEntry.path().string().size() - 4) != ".csv")
@@ -21,7 +38,7 @@ void Backtester::run(Strategy& strategy)
             return;
         }
         //else {std::cout << "Opening file: " << dirEntry.path().string() << std::endl;}
-        
+
         std::string row;
 
         //column headers
@@ -87,4 +104,48 @@ void Backtester::run(Strategy& strategy)
             : tabulate::Color::red);
 
     std::cout << metricsTable << std::endl;
+}
+
+void Backtester::userControl()
+{
+
+}
+
+//calls binance API for historical candle data and unzips of the files
+void Backtester::loadHistoricalData(const int& granularity, const std::string_view& ticker)
+{
+    //mock command we are trying to replicate:
+    //curl -s "https://data.binance.us/public_data/spot/monthly/klines/BNBUSDT/12h/BNBUSDT-12h-2023-01.zip" -o BNBUS2DT-12h-2023-01-01.zip
+
+    std::string month;
+
+    TempPath path;
+    path.printPath();
+
+    //downloads a full year worth of data
+    for(int i{1}; i < 13; i++)
+    {
+        month = (i < 10) 
+            ? "0" + std::to_string(i) 
+            : std::to_string(i); 
+
+        std::string curlCommand = std::format(
+            R"(curl -s  "https://data.binance.us/public_data/spot/monthly/klines/{}/{}m/{}-{}m-2023-{}.zip" -o )",
+            ticker,
+            granularity,
+            ticker,
+            granularity,
+            month
+        );
+
+        std::string outputName = std::format(
+            R"({}-{}m-2023-{}.zip)",
+            ticker,
+            granularity,
+            month
+        );
+
+        std::system((curlCommand + outputName).c_str());
+        std::system(("unzip " + outputName).c_str());
+    }
 }
