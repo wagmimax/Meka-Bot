@@ -22,6 +22,8 @@ int main() {
         std::cin >> choice;
     }
     
+    std::system("clear");
+
     const SelectedMode selectedMode = static_cast<SelectedMode>(choice);
 
     switch (selectedMode)

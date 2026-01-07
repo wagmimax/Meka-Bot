@@ -22,7 +22,8 @@ private:
     void userControl();
 
     //use binance API to get historical candle data. stores in a temp file
-    void loadHistoricalData(const std::filesystem::path& path, const int& granularity, const std::string_view& ticker);
+    void loadHistoricalData(const int& granularity, const std::string_view& ticker, const std::vector<int>& years);
 
+    std::filesystem::path path;
     PaperAccount paperAccount;
 };

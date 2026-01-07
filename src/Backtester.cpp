@@ -22,6 +22,7 @@ public:
     std::filesystem::path getPath() const { return path_; }
 
     void printPath() const { std::cout << path_ << std::endl; }
+    
 private:
     std::filesystem::path path_;
 };
@@ -29,9 +30,11 @@ private:
 void Backtester::run(Strategy& strategy)
 {
     TempPath tempPath("BINANCEHISTORICALCANDLES");
-    loadHistoricalData(tempPath.getPath(), 5, "BNBUSDT");
+    path = tempPath.getPath();
 
-    for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(tempPath.getPath()))
+    userControl();
+
+    for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(path))
     {
         if(dirEntry.path().string().substr(dirEntry.path().string().size() - 4) != ".csv")
             continue;
@@ -101,8 +104,8 @@ void Backtester::run(Strategy& strategy)
 
     std::string finalBalStr = formatBalance(paperAccount.getBalance());
     std::string winrateStr = std::format("{:.2f}%", winrate);
-    std::string winsStr = std::to_string(static_cast<int>(wins));
-    std::string lossesStr = std::to_string(static_cast<int>(losses));
+    std::string winsStr = std::to_string(static_cast<int>(wins));           //cast to int to
+    std::string lossesStr = std::to_string(static_cast<int>(losses));       //remove decimal
 
     //organize metrics into a table for output
     tabulate::Table metricsTable;
@@ -120,46 +123,108 @@ void Backtester::run(Strategy& strategy)
 
 void Backtester::userControl()
 {
+    tabulate::Table message;
+    std::string userInput;
 
+    message.add_row({"Granularity", "Tickers Included", "Date Range"});
+    message.add_row({"5m", "BTCUSDT, ETHUSDT, SOLUSDT", "2023 - 2025"});
+    std::cout << message << "\n";
+
+    while(userInput != "y" && userInput != "n")
+    {
+        std::cout << "Run premade dataset? (y/n)\n";
+        std::cin >> userInput;
+    }
+    
+    if(userInput == "y")
+    {
+        loadHistoricalData(5, "BTCUSDT", {2023, 2024, 2025});
+        loadHistoricalData(5, "ETHUSDT", {2023, 2024, 2025});
+        loadHistoricalData(5, "SOLUSDT", {2023, 2024, 2025});
+    }
+    else
+    {
+        std::system("clear");
+        
+
+        std::vector<int> years;
+        std::string ticker;
+        int granularity;
+        userInput = "y";
+
+        while(userInput != "n")
+        {
+            std::cout << "CUSTOM BACKTESTING DATASETS\n\n";
+
+            std::cout << "Input ticker: ";
+            std::cin >> ticker;
+
+            std::cout << "Input granularity (in minutes): ";
+            std::cin >> granularity;
+
+            std::cout << "Input year(s) of data: ";
+            std::string line;
+            std::getline(std::cin >> std::ws, line);
+
+            std::istringstream iss(line);
+            for (int year; iss >> year; )
+                years.push_back(year);
+
+            std::system("clear");
+            loadHistoricalData(granularity, ticker, years);
+            std::system("clear");
+
+            years.clear();
+
+            std::cout << "Add more data? (y/n)";
+            std::cin >> userInput;
+        }
+    }
 }
 
 //calls binance API for historical candle data and unzips of the files
-void Backtester::loadHistoricalData(const std::filesystem::path& path, const int& granularity, const std::string_view& ticker)
+void Backtester::loadHistoricalData(const int& granularity, const std::string_view& ticker, const std::vector<int>& years)
 {
     //mock command we are trying to replicate:
     //curl -s "https://data.binance.us/public_data/spot/monthly/klines/BNBUSDT/12h/BNBUSDT-12h-2023-01.zip" -o {tempdir}/BNBUS2DT-12h-2023-01-01.zip
 
-    //downloads a full year worth of data
-    for(int i{1}; i < 13; i++)
+
+    for(const auto& year : years)
     {
-        std::string month = (i < 10) 
-            ? "0" + std::to_string(i) 
-            : std::to_string(i); 
+        //downloads a full year worth of data
+        for(int day{1}; day < 13; day++)
+        {
+            std::string month = (day < 10) 
+                ? "0" + std::to_string(day) 
+                : std::to_string(day); 
 
-        std::string curlCommand = std::format(
-            R"(curl -s  "https://data.binance.us/public_data/spot/monthly/klines/{}/{}m/{}-{}m-2025-{}.zip" -o )",
-            ticker,
-            granularity,
-            ticker,
-            granularity,
-            month
-        );
+            std::string curlCommand = std::format(
+                R"(curl -s  "https://data.binance.us/public_data/spot/monthly/klines/{}/{}m/{}-{}m-{}-{}.zip" -o )",
+                ticker,
+                granularity,
+                ticker,
+                granularity,
+                year,
+                month
+            );
 
-        std::string outputFile = std::format(
-            R"({}/{}-{}m-2023-{}.zip)",
-            path.string(),
-            ticker,
-            granularity,
-            month
-        );
+            std::string outputFile = std::format(
+                R"({}/{}-{}m-{}-{}.zip)",
+                path.string(),
+                ticker,
+                granularity,
+                year,
+                month
+            );
 
-        std::string unzipCommand = std::format(
-            R"(unzip -o "{}" -d "{}")",
-            outputFile,
-            path.string()
-        );
+            std::string unzipCommand = std::format(
+                R"(unzip -o "{}" -d "{}")",
+                outputFile,
+                path.string()
+            );
 
-        std::system((curlCommand + outputFile).c_str());
-        std::system((unzipCommand).c_str());
+            std::system((curlCommand + outputFile).c_str());
+            std::system((unzipCommand).c_str());
+        }
     }
 }

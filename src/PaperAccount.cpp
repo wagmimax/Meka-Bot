@@ -65,7 +65,7 @@ void PaperAccount::checkOpenPositions(CandleData candle)
     if(position.tradeType == TradeIntent::LONG)
     {
         //edgecase: if a candle is touching both tp and sl, omit the trade because we dont know which got hit first
-        if(candle.high >= position.targetProfitPrice && candle.low <= position.stopLossPrice)
+        if(candle.high >= position.targetProfitPrice && candle.low <= position.stopLossPrice) [[unlikely]]
         {
             position.active = false;
             if(DEBUGGING_ON) std::cout << "EDGECASE HIT, TRADE OMITTED\n";
@@ -98,7 +98,7 @@ void PaperAccount::checkOpenPositions(CandleData candle)
     if(position.tradeType == TradeIntent::SHORT)
     {
         //edgecase: if a candle is touching both tp and sl, omit the trade because we dont know which got hit first
-        if(candle.low <= position.targetProfitPrice && candle.high >= position.stopLossPrice)
+        if(candle.low <= position.targetProfitPrice && candle.high >= position.stopLossPrice) [[unlikely]]
         {
             position.active = false;
             if(DEBUGGING_ON) std::cout << "EDGECASE HIT, TRADE OMITTED\n";
