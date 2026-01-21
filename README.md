@@ -1,8 +1,8 @@
 A dev's tool for working with crypto data
 
-My program has two parts:
--Live crypto data pipeline
--Strategy backtester
+My program has two parts:  
+-Live crypto data pipeline  
+-Strategy backtester  
 
 I eventually hope to connect the two for backtesting on live data, and am actively working on this project.
 
