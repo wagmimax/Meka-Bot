@@ -5,8 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # --- Boost Beast ---
@@ -36,6 +34,11 @@ file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 # --- Executable ---
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+# --- Set output directory (AFTER target creation) ---
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
+
 # --- Link libraries ---
 target_link_libraries(${PROJECT_NAME} 
     Boost::beast
@@ -47,5 +50,5 @@ target_link_libraries(${PROJECT_NAME}
     ws2_32
 )
 
-#cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -G "Visual Studio 17 2022" -A x64 (to init)
-#cmake --build . --config Release (to compile)
+#cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -G "Visual Studio 17 2022" -A x64 (to init)
+#cmake --build build --config Release (to compile)
