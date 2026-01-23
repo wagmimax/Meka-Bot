@@ -48,7 +48,6 @@ void Backtester::run(Strategy& strategy)
             std::cout << "Could not open file csv" << std::endl;
             return;
         }
-        //else {std::cout << "Opening file: " << dirEntry.path().string() << std::endl;}
 
         std::string row;
 

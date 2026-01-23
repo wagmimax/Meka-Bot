@@ -6,7 +6,7 @@
 class Database
 {
 public:
-    void initDB(std::vector<std::string>&);
+    void initDB(const std::vector<std::string>&);
     void writeData(CandleData);
     void readData();
 private:

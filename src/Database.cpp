@@ -1,10 +1,10 @@
 #include<Database.h>
 
-void Database::initDB(std::vector<std::string>& pairs)
+void Database::initDB(const std::vector<std::string>& pairs)
 {
     std::string currentPair;
 
-    if (sqlite3_open("../../../data/Database.db", &db) != SQLITE_OK) 
+    if (sqlite3_open("../../data/Database.db", &db) != SQLITE_OK) 
     {
         std::cout << "Failed to open database.\n";
         return;
@@ -70,9 +70,7 @@ void Database::writeData(CandleData candle)
     {
         //for recording standalone database write latency
         auto t2 = std::chrono::high_resolution_clock::now();
-        auto write_latency = std::chrono::duration_cast<std::chrono::microseconds>(
-        t2 - t1
-    ).count();
+        auto write_latency = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
     
         //for socket -> database latency
         std::cout << "DB Write: " << write_latency << " μs" << std::endl;

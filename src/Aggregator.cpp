@@ -1,4 +1,5 @@
 #include<Aggregator.h>
+#include<unordered_map>
 
 void Aggregate(Database& sqliteDB)
 {
