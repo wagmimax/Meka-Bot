@@ -6,18 +6,21 @@
 
 struct CandleData
 {
-    std::string ticker;
-    double open;
-    double close; //keeps changing until the candle closes
+    
+    
+    double close;
     double high;
     double low;
     double volume;
+    double open;
+
+    std::string ticker;
     std::string timestamp;
     std::string minute;
     std::chrono::time_point<std::chrono::high_resolution_clock> latencyTimestamp;
 
     CandleData() 
-        : ticker(""), open(-1), close(-1), high(-1), low(-1), volume(-1), timestamp(""), minute(""), latencyTimestamp(std::chrono::high_resolution_clock::now()) {}
+        : close(-1), high(-1), low(-1), volume(-1), open(-1), ticker(""), timestamp(""), minute(""), latencyTimestamp(std::chrono::high_resolution_clock::now()) {}
 
     CandleData(const std::string& ticker, double open, double close,
         double high, double low, double volume, const std::string& timestamp, 

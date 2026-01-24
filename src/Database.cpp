@@ -2,7 +2,6 @@
 
 void Database::initDB(const std::vector<std::string>& pairs)
 {
-    std::string currentPair;
 
     if (sqlite3_open("../../data/Database.db", &db) != SQLITE_OK) 
     {
@@ -22,7 +21,7 @@ void Database::initDB(const std::vector<std::string>& pairs)
 
     for(int i = 0; i < pairs.size(); i++)
     {
-        currentPair = pairs[i];
+        std::string currentPair = pairs[i];
         std::string sql = "CREATE TABLE IF NOT EXISTS " + currentPair + " ("
         "timestamp TEXT PRIMARY KEY,"
         "open REAL, "

@@ -10,18 +10,12 @@ void parseData()
     while(true)
     {
         TimestampedMessage rawJSON = rawData.popValue();
+        // auto start = std::chrono::high_resolution_clock::now();
         try
         {
             json = nlohmann::json::parse(rawJSON.json);
-            if(!json.contains("events") || json["events"].empty())
-                continue;
 
-            const auto& events = json["events"][0];
-            
-            if(!events.contains("trades") || events["trades"].empty())
-                continue;
-
-            const auto& trades = events["trades"];
+            const auto& trades = json["events"][0]["trades"];
 
             //coinbase sends batch trades in an array when they happen in the same microsecond
             for(const auto& trade : trades)
@@ -39,5 +33,7 @@ void parseData()
         {
             std::cerr << "Error processing trade: " << e.what() << std::endl;
         }
+        // auto end = std::chrono::high_resolution_clock::now();
+        // std::cout << "Parser latency: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "\n";
     }
 }
