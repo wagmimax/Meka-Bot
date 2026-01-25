@@ -1,6 +1,7 @@
 #include<ConcurrentQueue.h>
 #include<Parser.h>
 #include<profiler.h>
+#include<simdjson.h>
 
 void parseData()
 {
@@ -8,41 +9,42 @@ void parseData()
         tracy::SetThreadName("Parser");
     #endif
     std::cout << "Begin parsing" << std::endl;
-    nlohmann::json json;
-    using namespace std;
 
+    simdjson::dom::parser parser;
     while(true)
     {
         TimestampedMessage rawJSON = rawData.popValue();
+        simdjson::padded_string stringJSON = rawJSON.json;
 
         FRAME_MARK();
         PROFILE_SCOPE();
 
-        // auto start = std::chrono::high_resolution_clock::now();
-        try
-        {
-            json = nlohmann::json::parse(rawJSON.json);
+        simdjson::dom::element json;
+        parser.parse(stringJSON).get(json);
 
-            const auto& trades = json["events"][0]["trades"];
+        auto trades = json["events"].get_array().at(0)["trades"];
 
-            //coinbase sends batch trades in an array when they happen in the same microsecond
-            for(const auto& trade : trades)
-            {
-                tradeData.push(TradeData{
-                    [] (std::string s) {s.erase(std::remove(s.begin(), s.end(), '-'), s.end()); return s;}
-                        (trade["product_id"].get<std::string>()), 
-                    trade["time"].get<std::string>(), 
-                    std::stod(trade["price"].get<std::string>()), 
-                    std::stod(trade["size"].get<std::string>()),
-                    rawJSON.latencyTimestamp
-                });
-            }
-        }
-        catch(const std::exception& e)
+        //coinbase sends batch trades in an array when they happen in the same microsecond
+        for(const auto& trade : trades)
         {
-            std::cerr << "Error processing trade: " << e.what() << std::endl;
+            std::string productID;
+            std::string time;
+            std::string_view price;
+            std::string_view size;
+
+            trade["product_id"].get_string().get(productID);
+            trade["time"].get_string().get(time);
+            trade["price"].get_string().get(price);
+            trade["size"].get_string().get(size);
+
+            tradeData.push(TradeData{
+                [] (std::string s) {s.erase(std::remove(s.begin(), s.end(), '-'), s.end()); return s;}
+                (productID), 
+                time, 
+                std::stod(std::string(price)), 
+                std::stod(std::string(size)),
+                rawJSON.latencyTimestamp
+            });
         }
-        // auto end = std::chrono::high_resolution_clock::now();
-        // std::cout << "Parser latency: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << "\n";
     }
 }

@@ -28,6 +28,9 @@ find_package(Boost CONFIG REQUIRED beast)
 # --- nlohmann_json ---
 find_package(nlohmann_json CONFIG REQUIRED)
 
+# --- simdjson ---
+find_package(simdjson CONFIG REQUIRED)
+
 # --- SQLite3 ---
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
@@ -62,6 +65,7 @@ target_link_libraries(${PROJECT_NAME}
     OpenSSL::SSL
     OpenSSL::Crypto
     tabulate::tabulate
+    simdjson::simdjson
     ws2_32
 )
 
