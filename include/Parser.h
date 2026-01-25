@@ -55,4 +55,13 @@ struct TimestampedMessage
     json(json), latencyTimestamp(latencyTimestamp) {};
 };
 
+struct LoggerFormat {
+    CandleData candle;
+    std::chrono::time_point<std::chrono::high_resolution_clock> latencyTimestamp;
+
+    LoggerFormat() = default;
+
+    LoggerFormat(CandleData candle, std::chrono::time_point<std::chrono::high_resolution_clock> latencyTimestamp): candle(candle), latencyTimestamp(latencyTimestamp) {};
+};
+
 void parseData();

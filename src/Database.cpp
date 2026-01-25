@@ -74,11 +74,12 @@ void Database::writeData(CandleData candle)
     {
         //for recording standalone database write latency
         auto t2 = std::chrono::high_resolution_clock::now();
-        auto write_latency = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
+        LoggerFormat log(candle, t2);
+        logs.push(log);
+
+        // auto write_latency = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
     
-        //for socket -> database latency
-        //std::cout << "DB Write: " << write_latency << " μs" << std::endl;
-        auto latency = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - candle.latencyTimestamp).count();
-        std::cout << "Socket -> Database Latency: " << latency << "μs\n";
+        // auto latency = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - candle.latencyTimestamp).count();
+        // std::cout << "Socket -> Database Latency: " << latency << "μs\n";
     }
 }

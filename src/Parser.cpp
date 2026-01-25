@@ -32,10 +32,10 @@ void parseData()
             std::string_view price;
             std::string_view size;
 
-            trade["product_id"].get_string().get(productID);
-            trade["time"].get_string().get(time);
-            trade["price"].get_string().get(price);
-            trade["size"].get_string().get(size);
+            if(trade["product_id"].get_string().get(productID)) continue;
+            if(trade["time"].get_string().get(time)) continue;
+            if(trade["price"].get_string().get(price)) continue;
+            if(trade["size"].get_string().get(size)) continue;
 
             tradeData.push(TradeData{
                 [] (std::string s) {s.erase(std::remove(s.begin(), s.end(), '-'), s.end()); return s;}

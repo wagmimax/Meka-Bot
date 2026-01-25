@@ -6,6 +6,7 @@
 #include<Aggregator.h>
 #include<IPC.h>
 #include<Backtester.h>
+#include<logger.h>
 
 class Pipeline {
 public:

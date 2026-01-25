@@ -12,6 +12,7 @@ void Pipeline::start() {
     threads_.emplace_back(parseData);
     threads_.emplace_back(Aggregate, std::ref(database_), std::ref(pairs_));
     threads_.emplace_back(&NamedPipe::sendData, &server_);
+    threads_.emplace_back(logger);
 
     for(auto& thread : threads_) {
         if(thread.joinable()) {

@@ -82,3 +82,6 @@ extern ConcurrentQueue<TradeData> tradeData;
 
 // Closed 1m candles
 extern ConcurrentQueue<CandleData> candleData;
+
+// Used for logging completed candles
+extern ConcurrentQueue<LoggerFormat> logs;
