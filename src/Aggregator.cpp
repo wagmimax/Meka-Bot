@@ -1,30 +1,32 @@
 #include<Aggregator.h>
 #include<unordered_map>
+#include<profiler.h>
 
 void Aggregate(Database& sqliteDB, const std::vector<std::string> pairs)
 {
+    #ifdef TRACY_ENABLE
+        tracy::SetThreadName("Aggregator");
+    #endif
     std::unordered_map<std::string_view, CandleData> currentCandles;
-
-    
-        currentCandles.emplace("BTC", CandleData("BTC", -1, -1, -1, -1, -1, "temp", "temp", std::chrono::high_resolution_clock::now()));
-            currentCandles.emplace("ETH", CandleData("ETH", -1, -1, -1, -1, -1, "temp", "temp", std::chrono::high_resolution_clock::now()));
-        currentCandles.emplace("SOL", CandleData("SOL", -1, -1, -1, -1, -1, "temp", "temp", std::chrono::high_resolution_clock::now()));
-
-
-
     std::unordered_map<std::string_view, std::string> lastTimestamp;
 
-    lastTimestamp["BTC"] = "";
-    lastTimestamp["ETH"] = "";
-    lastTimestamp["SOL"] = "";
+    for(const auto& pair: pairs) { 
+        currentCandles.emplace(pair, CandleData(pair, -1, -1, -1, -1, -1, "temp", "temp", std::chrono::high_resolution_clock::now()));
+        lastTimestamp[pair] = "";
+    }
 
     while(true)
     {
+        
         TradeData currentTrade = tradeData.popValue();
+
+        FRAME_MARK();
+        PROFILE_SCOPE();
 
         // auto start = std::chrono::high_resolution_clock::now();
         
-        std::string_view ticker(currentTrade.ticker.c_str(), 3);
+        std::string_view ticker = currentTrade.ticker;
+
         std::string_view currentMinute(currentTrade.time.c_str() + 14, 2);
 
         //coinbase sends old trade data sometimes. needs to be ignored
@@ -64,6 +66,7 @@ void Aggregate(Database& sqliteDB, const std::vector<std::string> pairs)
         candleData.push(candle);
 
         // auto end = std::chrono::high_resolution_clock::now();
-        // std::cout << "Aggregator latency: " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << "\n";
+        // std::cout << "Aggregator latency: " << 
+        // std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - currentTrade.latencyTimestamp).count() << "\n";
     }
 }

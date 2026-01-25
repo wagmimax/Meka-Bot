@@ -19,8 +19,8 @@ class WebSocketClient
 public:
     WebSocketClient(const std::string& host, const std::string& port, const std::string& path);
 
-    void connect();
-    void run();
+    void connect(const std::vector<std::string>& pairs);
+    void run(const std::vector<std::string>& pairs);
     void close();
 
 private:

@@ -1,4 +1,5 @@
 #include<Database.h>
+#include<profiler.h>
 
 void Database::initDB(const std::vector<std::string>& pairs)
 {
@@ -46,6 +47,9 @@ void Database::initDB(const std::vector<std::string>& pairs)
 
 void Database::writeData(CandleData candle)
 {
+    FRAME_MARK();
+    PROFILE_SCOPE();
+    
     auto t1 = std::chrono::high_resolution_clock::now();
 
     std::string sql = "INSERT INTO " + candle.ticker + " (timestamp, open, high, low, close, volume) "
@@ -57,6 +61,7 @@ void Database::writeData(CandleData candle)
         + std::to_string(candle.close) + ", " 
         + std::to_string(candle.volume) + ");";
     
+
     char* err = nullptr;
     int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &err);
 
@@ -72,8 +77,8 @@ void Database::writeData(CandleData candle)
         auto write_latency = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
     
         //for socket -> database latency
-        std::cout << "DB Write: " << write_latency << " μs" << std::endl;
+        //std::cout << "DB Write: " << write_latency << " μs" << std::endl;
         auto latency = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - candle.latencyTimestamp).count();
-        std::cout << "Socket -> Database Latency: " << latency << "\n";
+        std::cout << "Socket -> Database Latency: " << latency << "μs\n";
     }
 }

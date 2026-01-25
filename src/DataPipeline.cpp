@@ -2,7 +2,7 @@
 
 void Pipeline::start() {
 
-    threads_.emplace_back(&WebSocketClient::run, &coinbaseStream_);
+    threads_.emplace_back(&WebSocketClient::run, &coinbaseStream_, pairs_);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     
     //flush any bad data in the beginning 

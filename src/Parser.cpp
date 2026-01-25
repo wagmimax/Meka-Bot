@@ -1,8 +1,12 @@
 #include<ConcurrentQueue.h>
 #include<Parser.h>
+#include<profiler.h>
 
 void parseData()
 {
+    #ifdef TRACY_ENABLE
+        tracy::SetThreadName("Parser");
+    #endif
     std::cout << "Begin parsing" << std::endl;
     nlohmann::json json;
     using namespace std;
@@ -10,6 +14,10 @@ void parseData()
     while(true)
     {
         TimestampedMessage rawJSON = rawData.popValue();
+
+        FRAME_MARK();
+        PROFILE_SCOPE();
+
         // auto start = std::chrono::high_resolution_clock::now();
         try
         {
@@ -21,7 +29,8 @@ void parseData()
             for(const auto& trade : trades)
             {
                 tradeData.push(TradeData{
-                    trade["product_id"].get<std::string>(), 
+                    [] (std::string s) {s.erase(std::remove(s.begin(), s.end(), '-'), s.end()); return s;}
+                        (trade["product_id"].get<std::string>()), 
                     trade["time"].get<std::string>(), 
                     std::stod(trade["price"].get<std::string>()), 
                     std::stod(trade["size"].get<std::string>()),
