@@ -1,4 +1,4 @@
-#include<IPC.h>
+#include<Pipeline/IPC.h>
 #include<sstream>
 
 int NamedPipe::createConnection()
@@ -14,7 +14,7 @@ int NamedPipe::createConnection()
     }
 
     //start up other process, which will be client
-    std::system("start python ../../src/ControlPanel.py");
+    std::system("start python ../../src/Pipeline/ControlPanel.py");
     Connected = ConnectNamedPipe(hPipe, NULL);
     
 

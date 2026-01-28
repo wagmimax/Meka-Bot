@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PaperAccount.h"
-#include "Strategy.h"
+#include "Backtester/PaperAccount.h"
+#include "Backtester/Strategy.h"
 #include <fstream>
 #include <sstream>
 #include <iomanip>

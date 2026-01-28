@@ -1,5 +1,6 @@
 #include<iostream>
-#include<DataPipeline.h>
+#include<Pipeline/DataPipeline.h>
+#include<Backtester/Backtester.h>
 
 typedef enum SelectedMode{NONE = 0, PIPELINE, BACKTESTER}SelectedMode;
 
@@ -7,7 +8,7 @@ int main() {
 
     std::cout << "Number of threads supported: " << std::thread::hardware_concurrency() << std::endl;
 
-    int choice{0};
+    int choice {};
     while(choice != PIPELINE && choice != BACKTESTER)
     {
         std::cout <<"Select mode:\n"

@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "Parser.h"
-#include "Strategy.h"
+#include "Pipeline/Parser.h"
+#include "Backtester/Strategy.h"
 #include"tabulate\table.hpp"
 
 std::string formatBalance(double value, int precision = 2);

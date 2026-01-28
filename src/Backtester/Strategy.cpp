@@ -1,5 +1,5 @@
 #pragma once
-#include <Strategy.h>
+#include <Backtester/Strategy.h>
 
 Trade SupportResistance::next(const CandleData& candle)
 {

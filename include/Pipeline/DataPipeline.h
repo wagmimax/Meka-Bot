@@ -1,12 +1,11 @@
 #pragma once
-#include<WebSocketClient.h>
-#include<ConcurrentQueue.h>
+#include"Pipeline/WebSocketClient.h"
+#include"Pipeline/ConcurrentQueue.h"
 #include<thread>
-#include<Database.h>
-#include<Aggregator.h>
-#include<IPC.h>
-#include<Backtester.h>
-#include<logger.h>
+#include"Pipeline/Database.h"
+#include"Pipeline/Aggregator.h"
+#include"Pipeline/IPC.h"
+#include"Pipeline/logger.h"
 
 class Pipeline {
 public:

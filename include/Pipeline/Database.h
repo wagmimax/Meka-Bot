@@ -1,7 +1,7 @@
 #pragma once
-#include <ConcurrentQueue.h>
+#include "Pipeline/ConcurrentQueue.h"
 #include <sqlite3.h>
-#include <Parser.h>
+#include "Pipeline/Parser.h"
 
 class Database
 {

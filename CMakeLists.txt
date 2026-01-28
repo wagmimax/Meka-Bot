@@ -47,7 +47,7 @@ find_package(imgui CONFIG REQUIRED)
 find_package(tabulate CONFIG REQUIRED)
 
 # --- Source files ---
-file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # --- Executable ---
 add_executable(${PROJECT_NAME} ${SOURCES})

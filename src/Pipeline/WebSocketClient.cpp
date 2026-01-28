@@ -1,5 +1,5 @@
-#include<WebSocketClient.h>
-#include<ConcurrentQueue.h>
+#include<Pipeline/WebSocketClient.h>
+#include<Pipeline/ConcurrentQueue.h>
 #include<profiler.h>
 #include<format>
 
@@ -76,6 +76,8 @@ void WebSocketClient::run(const std::vector<std::string>& pairs)
     connect(pairs);
     std::cout << "Connected successfully! Waiting for data...\n";
 
+    std::string stringJSON;
+
     while(true)
     {
         
@@ -87,7 +89,7 @@ void WebSocketClient::run(const std::vector<std::string>& pairs)
         FRAME_MARK();
         PROFILE_SCOPE();
 
-        std::string stringJSON = boost::beast::buffers_to_string(buffer_.data());
+        stringJSON = boost::beast::buffers_to_string(buffer_.data());
 
         TimestampedMessage tm(stringJSON, std::chrono::high_resolution_clock::now());
 

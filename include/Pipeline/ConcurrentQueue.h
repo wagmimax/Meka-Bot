@@ -5,7 +5,7 @@
 #include <thread>
 #include <iostream>
 #include <string>
-#include "Parser.h"
+#include "Pipeline/Parser.h"
 #include "moodycamel.h"
 
 template <typename T>

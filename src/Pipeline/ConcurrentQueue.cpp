@@ -1,4 +1,4 @@
-#include<ConcurrentQueue.h>
+#include<Pipeline/ConcurrentQueue.h>
 
 ConcurrentQueue<TimestampedMessage> rawData;
 ConcurrentQueue<TradeData> tradeData;
