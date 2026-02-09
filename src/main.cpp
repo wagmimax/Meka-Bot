@@ -2,7 +2,7 @@
 #include<Pipeline/DataPipeline.h>
 #include<Backtester/Backtester.h>
 #include<Bot/TradingBot.h>
-
+#include<Bot/CoinbaseAPI.h>
 typedef enum SelectedMode{NONE = 0, PIPELINE, BACKTESTER, BOT}SelectedMode;
 
 int main() {
@@ -39,8 +39,13 @@ int main() {
         }break;
         case BOT:
         {
-            TradingBot bot;
-            bot.start();
+
+            CoinbaseAPI api;
+            api.listAccounts();
+
+            //getToken("GET", "/api/v3/brokerage/accounts");
+            //TradingBot bot;
+            //bot.start();
             
             
         

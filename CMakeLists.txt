@@ -46,7 +46,11 @@ find_package(imgui CONFIG REQUIRED)
 # --- tabulate ---
 find_package(tabulate CONFIG REQUIRED)
 
+# --- cpp-jwt ---
 find_package(cpp-jwt CONFIG REQUIRED)
+
+# --- libcurl wrapper ---
+find_package(curlcpp CONFIG REQUIRED)
 
 # --- Source files ---
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -69,6 +73,7 @@ target_link_libraries(${PROJECT_NAME}
     tabulate::tabulate
     simdjson::simdjson
     cpp-jwt::cpp-jwt
+    curlcpp::curlcpp
     ws2_32
 )
 
