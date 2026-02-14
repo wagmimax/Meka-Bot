@@ -1,4 +1,5 @@
 #pragma once
+#define NOMINMAX    // windows min max macros break everything
 #include<string>
 #include"jwt/jwt.hpp"
 #include"openssl/rand.h"
@@ -13,6 +14,16 @@
 #include<format>
 #include<list>
 #include<array>
+
+// When structs of data are needed from api response
+namespace Responses {
+
+    // Data of maker + taker fees for spot and 
+    struct GetTransactionSummary {
+        double makerFees;
+        double takerFees;
+    };
+};
 
 class CoinbaseAPI {
 public:
@@ -52,6 +63,42 @@ public:
         }
 
         return -1;
+    }
+
+    // returns maker and taker fees for spot trading (in percent)
+    Responses::GetTransactionSummary getTransactionSummary() {
+        std::string token = getToken("GET", "/api/v3/brokerage/transaction_summary");
+        
+        std::ostringstream curlOutput;
+        curl::curl_ios<std::ostringstream> ios(curlOutput);
+        curl::curl_easy easy(ios);
+
+        struct curl_slist *headers = nullptr;
+        headers = curl_slist_append(headers, ("Authorization: Bearer " + token).c_str());
+
+        easy.add<CURLOPT_HTTPHEADER>(headers);
+        easy.add<CURLOPT_URL>("https://api.coinbase.com/api/v3/brokerage/transaction_summary");
+        
+        easy.perform();
+
+        std::cout << curlOutput.str();
+
+        simdjson::dom::parser parser;
+        simdjson::padded_string stringJSON = curlOutput.str();
+        
+        simdjson::dom::element json;
+        parser.parse(stringJSON).get(json);
+
+        Responses::GetTransactionSummary response;
+        std::string fees;
+
+        json["fee_tier"]["taker_fee_rate"].get_string().get(fees);
+        response.takerFees = (std::stod(fees)) * 100;
+
+        json["fee_tier"]["maker_fee_rate"].get_string().get(fees);
+        response.makerFees = (std::stod(fees)) * 100;
+
+        return response;
     }
     
     // Create a limit order. Returns order_id string from response
