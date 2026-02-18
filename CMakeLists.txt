@@ -58,9 +58,28 @@ file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 # --- Executable ---
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE -O3 -march=native -flto)
+    target_link_options(${PROJECT_NAME} PRIVATE -flto)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE -O3 -march=native -flto)
+    target_link_options(${PROJECT_NAME} PRIVATE -flto)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(${PROJECT_NAME} PRIVATE /O2 /GL)
+    target_link_options(${PROJECT_NAME} PRIVATE /LTCG)
+endif()
+
+
 # --- Set output directory ---
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/Release"
+)
+
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:CURL::libcurl>"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 )
 
 # --- Link libraries ---
@@ -80,10 +99,5 @@ target_link_libraries(${PROJECT_NAME}
 if(ENABLE_TRACY)
     target_link_libraries(${PROJECT_NAME} TracyClient)
     target_compile_definitions(${PROJECT_NAME} PRIVATE TRACY_ENABLE)
-    # Windows-specific Tracy dependencies
     target_link_libraries(${PROJECT_NAME} dbghelp)
 endif()
-
-#cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -G "Visual Studio 17 2022" -A x64 (to init)
-#cmake --build build --config Release (to compile)
-#cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -G "Visual Studio 17 2022" -A x64 -DENABLE_TRACY=ON (to debug)
