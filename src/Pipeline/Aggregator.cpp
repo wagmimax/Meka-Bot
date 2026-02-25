@@ -41,7 +41,7 @@ void Aggregate(Database& sqliteDB, const std::vector<std::string> pairs)
             if(candle.minute != "temp")
             {
                 candle.latencyTimestamp = currentTrade.latencyTimestamp;
-                candleData.push(candle);
+                //candleData.push(candle);
                 //sqliteDB.writeData(candle);
 
                 // std::cout << candle.minute << " Candle Closed. OHLC: " << candle.open 

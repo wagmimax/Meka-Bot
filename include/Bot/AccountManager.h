@@ -7,7 +7,7 @@ class AccountManager {
 public:
     AccountManager(CoinbaseAPI&);
 
-    void placeTrade(CoinbaseAPI&, Trade&);
+    bool placeTrade(CoinbaseAPI&, Trade&);
 
 private:
     void adjustRisk();
@@ -22,5 +22,4 @@ private:
     int wins;
     int losses;
     bool DEBUGGING_ON;
-    bool inPosition;
 };

@@ -10,5 +10,5 @@ public:
     void start(Strategy&, CoinbaseAPI&, AccountManager&);
     
 private:
-    
+    bool inTrade;
 };

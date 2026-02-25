@@ -9,7 +9,7 @@
 
 class Pipeline {
 public:
-    Pipeline(const std::vector<std::string>& pairs = {"ETHUSD"},
+    Pipeline(const std::vector<std::string>& pairs = {"ETHUSD", "BTCUSD", "SOLUSD"},
              const std::string& host = "advanced-trade-ws.coinbase.com",
              const std::string& port = "443",
              const std::string& path = "/ws/v1") :
@@ -38,7 +38,7 @@ public:
         threads_.emplace_back(parseData);
         threads_.emplace_back(Aggregate, std::ref(database_), std::ref(pairs_));
         //threads_.emplace_back(&NamedPipe::sendData, &server_);
-        //threads_.emplace_back(logger);
+        threads_.emplace_back(logger);
 
         for(auto& thread : threads_) {
             if(thread.joinable()) {
