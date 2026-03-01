@@ -137,15 +137,15 @@ public:
             "side": "{}",
             "order_configuration": {{
                 "limit_limit_gtd": {{
-                    "base_size": "{}",
-                    "limit_price": "{}",
+                    "base_size": "{:.8f}",
+                    "limit_price": "{:.2f}",
                     "end_time": "{}"
                 }}
             }},
             "attached_order_configuration": {{
                 "trigger_bracket_gtc": {{
-                    "limit_price": "{}",
-                    "stop_trigger_price": "{}"
+                    "limit_price": "{:.2f}",
+                    "stop_trigger_price": "{:.2f}"
                 }}
             }}
         }})", 

@@ -18,8 +18,7 @@ int main() {
                     "3 for bot\n";
         std::cin >> choice;
     }
-    
-    std::system("clear");
+
 
     const SelectedMode selectedMode = static_cast<SelectedMode>(choice);
  
@@ -39,14 +38,16 @@ int main() {
         }break;
         case BOT:
         {
+            std::cout << "1";
             std::ifstream inFile("../../secret.pem");
             std::stringstream keystream;
             keystream << inFile.rdbuf();
-
+            std::cout << "2";
             std::string key_name = std::getenv("COINBASE_KEY");
+            std::cout << "3";
             std::string key_secret = keystream.str();
-
-
+            std::cout << "4";
+            
             CoinbaseAPI api(key_name, key_secret);
             AccountManager man(api); 
             CoinFlip coinFlip;

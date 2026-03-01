@@ -7,7 +7,7 @@ class AccountManager {
 public:
     AccountManager(CoinbaseAPI&);
 
-    bool placeTrade(CoinbaseAPI&, Trade&);
+    std::string placeTrade(CoinbaseAPI&, Trade&);
 
 private:
     void adjustRisk();

@@ -16,7 +16,8 @@ AccountManager::AccountManager(CoinbaseAPI& api): balance_(5), currentRisk_(2.0)
     std::cout << "Balance: " << balance_ << " Excess Balance: " << excessBal_ << std::endl;
 }
 
-bool AccountManager::placeTrade(CoinbaseAPI& api, Trade& trade) {
+// places a trade. returns empty string if unsuccessful fill
+std::string AccountManager::placeTrade(CoinbaseAPI& api, Trade& trade) {
 
 
     double totalFees = makerFees_ + takerFees_;
@@ -45,10 +46,11 @@ bool AccountManager::placeTrade(CoinbaseAPI& api, Trade& trade) {
 
     std::string order_id = api.createOrder("ETH-USD", trade.tradeIntent, positionSize, trade.entryLevel, stopLossPrice, targetProfitPrice);
 
+    std::cout << "ACCOUNT MANAGER PLACED TRADE, WAITING RESULTS...\n";
     // trades are open for 60 seconds, we check them after 70 seconds to see whether we got filled
     std::this_thread::sleep_for(std::chrono::seconds(70));
-    
-    return(api.getOrder(order_id) == "OPEN");
+    std::cout << "FETCHING RESULTS...\n";
+    return (api.getOrder(order_id) == "OPEN") ? order_id : "";
 }
 
 void AccountManager::adjustRisk()
