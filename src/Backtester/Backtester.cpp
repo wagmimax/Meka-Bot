@@ -2,6 +2,7 @@
 #include<thread>
 #include<chrono>
 #include<filesystem>
+#include<tools/zip_file.hpp>
 
 //finds your OS's temp files folder, and creates a directory there. 
 //automatically cleans up (deletes) the directory once lifetime expires.
@@ -225,14 +226,11 @@ void Backtester::loadHistoricalData(const int& granularity, const std::string_vi
                 month
             );
 
-            std::string unzipCommand = std::format(
-                R"(unzip -o "{}" -d "{}")",
-                outputFile,
-                path.string()
-            );
-
+            // I need to change this...
             std::system((curlCommand + outputFile).c_str());
-            std::system((unzipCommand).c_str());
+        
+            miniz_cpp::zip_file file(outputFile);
+            file.extractall(path.string());
         }
     }
 }
