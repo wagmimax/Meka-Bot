@@ -3,6 +3,7 @@
 #include<chrono>
 #include<filesystem>
 #include<tools/zip_file.hpp>
+#include<tabulate/table.hpp>
 
 //finds your OS's temp files folder, and creates a directory there. 
 //automatically cleans up (deletes) the directory once lifetime expires.

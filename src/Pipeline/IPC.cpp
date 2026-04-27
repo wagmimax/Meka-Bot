@@ -1,6 +1,7 @@
 #include<Pipeline/IPC.h>
 #include<sstream>
 
+#ifdef __WIN32
 int NamedPipe::createConnection()
 {
     hPipe = CreateNamedPipeW(L"\\\\.\\pipe\\dataPipe",
@@ -59,3 +60,4 @@ void NamedPipe::sendData()
     }
     
 }
+#endif

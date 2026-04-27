@@ -1,5 +1,6 @@
 #pragma once
 #include<Backtester/PaperAccount.h>
+#include<tabulate/table.hpp>
 
 std::string formatBalance(double value, int precision)
 {

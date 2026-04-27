@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
+
+set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 project(CryptoPipeline VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
@@ -36,12 +39,6 @@ find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
 # --- OpenSSL ---
 find_package(OpenSSL REQUIRED)
-
-# --- implot ---
-find_package(implot CONFIG REQUIRED)
-
-# --- imgui ---
-find_package(imgui CONFIG REQUIRED)
 
 # --- tabulate ---
 find_package(tabulate CONFIG REQUIRED)
@@ -93,8 +90,13 @@ target_link_libraries(${PROJECT_NAME}
     simdjson::simdjson
     cpp-jwt::cpp-jwt
     curlcpp::curlcpp
-    ws2_32
 )
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME}
+        ws2_32
+    )
+endif()
 
 if(ENABLE_TRACY)
     target_link_libraries(${PROJECT_NAME} TracyClient)

@@ -52,7 +52,11 @@ public:
 private:
     WebSocketClient coinbaseStream_;
     Database database_;
+
+    #ifdef __WIN32
     NamedPipe server_;
+    #endif
+
     std::vector<std::thread> threads_;
     std::vector<std::string> pairs_;
     std::atomic<bool> shouldStop_;

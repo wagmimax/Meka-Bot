@@ -1,8 +1,11 @@
-#pragma once
-#include <vector>
+#ifndef BACKTESTER_PAPERACCOUNT_H
+#define BACKTESTER_PAPERACCOUNT_H
 #include "Pipeline/Parser.h"
 #include "Backtester/Strategy.h"
-#include"tabulate\table.hpp"
+#include "tabulate/tabulate.hpp"
+
+#include<unordered_map>
+//#include"tabulate.hpp"
 
 std::string formatBalance(double value, int precision = 2);
 
@@ -64,3 +67,5 @@ private:
     int losses;
     bool DEBUGGING_ON;
 };
+
+#endif

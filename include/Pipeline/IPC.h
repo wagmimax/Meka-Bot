@@ -1,3 +1,5 @@
+
+#ifdef __WIN32
 #include<Windows.h>
 #include"Pipeline/ConcurrentQueue.h"
 #include<iostream>
@@ -12,3 +14,5 @@ class NamedPipe
         HANDLE hPipe;
         BOOL Connected;
 };
+
+#endif
