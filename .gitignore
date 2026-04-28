@@ -30,3 +30,6 @@ build/
 
 #secret key
 secret.pem
+
+#cache
+.cache/
