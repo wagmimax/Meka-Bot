@@ -48,6 +48,9 @@ find_package(cpp-jwt CONFIG REQUIRED)
 
 # --- libcurl wrapper ---
 find_package(curlcpp CONFIG REQUIRED)
+     
+# --- libzip ---
+find_package(libzip CONFIG REQUIRED)
 
 # --- Source files ---
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -90,6 +93,8 @@ target_link_libraries(${PROJECT_NAME}
     simdjson::simdjson
     cpp-jwt::cpp-jwt
     curlcpp::curlcpp
+    libzip::zip
+
 )
 
 if(WIN32)

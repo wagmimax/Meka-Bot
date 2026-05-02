@@ -3,7 +3,7 @@
 #include<Backtester/Backtester.h>
 #include<Bot/Meka.h>
 
-typedef enum SelectedMode{NONE = 0, PIPELINE, BACKTESTER, BOT}SelectedMode;
+typedef enum SelectedMode{PIPELINE = 1, BACKTESTER, BOT}SelectedMode;
 
 int main() {
 
@@ -13,9 +13,9 @@ int main() {
     while(choice != PIPELINE && choice != BACKTESTER && choice != BOT)
     {
         std::cout <<"Select mode:\n"
-                    "1 for pipeline\n"
-                    "2 for backester\n"
-                    "3 for bot\n";
+                    "[1] Pipeline\n"
+                    "[2] Backester\n"
+                    "[3] Meka\n";
         std::cin >> choice;
     }
 

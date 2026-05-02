@@ -2,9 +2,8 @@
 #include<thread>
 #include<chrono>
 #include<filesystem>
-#include<tools/zip_file.hpp>
 #include<tabulate/table.hpp>
-
+#include<tools/zip_file.hpp>
 //finds your OS's temp files folder, and creates a directory there. 
 //automatically cleans up (deletes) the directory once lifetime expires.
 class TempPath
@@ -15,6 +14,12 @@ public:
         path_ = std::filesystem::temp_directory_path() / tempName;  
         std::filesystem::create_directories(path_);
     }
+
+    // not moveable nor copyable
+    TempPath(const TempPath&) = delete;
+    TempPath operator=(const TempPath&) = delete;
+    TempPath(TempPath&&) = delete;
+    TempPath operator=(TempPath&&) = delete;
 
     ~TempPath()
     {
@@ -174,7 +179,9 @@ void Backtester::userControl()
                 years.push_back(year);
 
             std::system("clear");
+            std::cout << 1;
             loadHistoricalData(granularity, ticker, years);
+            std::cout << 2;
             std::system("clear");
 
             years.clear();
