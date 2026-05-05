@@ -4,6 +4,7 @@
 #include<filesystem>
 #include<tabulate/table.hpp>
 #include<tools/zip_file.hpp>
+
 //finds your OS's temp files folder, and creates a directory there. 
 //automatically cleans up (deletes) the directory once lifetime expires.
 class TempPath
@@ -42,14 +43,21 @@ void Backtester::run(Strategy& strategy)
     strategy.userInit();
     userControl();
 
-    for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(path))
-    {
-        if(dirEntry.path().string().substr(dirEntry.path().string().size() - 4) != ".csv")
-            continue;
+    // This part is necessary to ensure the order of files getting parsed
+    // recursive_directory_iterator() does not guarantee the order of files, yields different results on different on OS
+    // We store the paths and sort it to make sure all platforms backtest in the same order
+    std::vector<std::filesystem::path> candleCSVs;
+    for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(path)) {
+        if(dirEntry.path().extension() == ".csv") candleCSVs.push_back(dirEntry.path());
+    }
+    std::sort(candleCSVs.begin(), candleCSVs.end());
+
+    for(auto csv : candleCSVs) std::cout << csv << "\n";
+    for(const auto& candleCSV : candleCSVs) {
 
         std::this_thread::sleep_for(std::chrono::seconds(0));
-        std::ifstream csv(dirEntry.path());
-
+        std::ifstream csv(candleCSV);
+        
         if(!csv.is_open())
         {
             std::cout << "Could not open file csv" << std::endl;
@@ -145,15 +153,12 @@ void Backtester::userControl()
     
     if(userInput == "y")
     {
-        std::system("clear");
         loadHistoricalData(5, "BTCUSDT", {2023, 2024, 2025});
         loadHistoricalData(5, "ETHUSDT", {2023, 2024, 2025});
         loadHistoricalData(5, "SOLUSDT", {2023, 2024, 2025});
-        std::system("clear");
     }
     else
     {
-        std::system("clear");
 
         std::vector<int> years;
         std::string ticker;
@@ -178,18 +183,15 @@ void Backtester::userControl()
             for (int year; iss >> year; )
                 years.push_back(year);
 
-            std::system("clear");
             std::cout << 1;
             loadHistoricalData(granularity, ticker, years);
             std::cout << 2;
-            std::system("clear");
 
             years.clear();
 
             std::cout << "Add more data? (y/n)";
             std::cin >> userInput;
 
-            std::system("clear");
         }
     }
 
