@@ -1,19 +1,25 @@
-WIP
+WIP - This software is my take on creating an algorithmic trading system.  
+  
+As of now, I built it for myself and I have much more work to do. Therefore, I will hold off on documentation until I believe my software is stable enough.  
 
-Meka Bot (will be) a fully automatic trading bot, capable of executing strategies and safely handling bankroll
 
-My program features three parts:  
+# Meka-Bot  
+Meka-Bot is a bot that programmatically trades cryptocurrency.  
   
-Meka Bot  
-- Meka will follow strict risk management, safely handling even leveraged accounts.  
-- It will trade crypto currency using Coinbase's advanced trade API, through REST endpoints.  
+As of now, it only support Coinbase (most widely available crypto exchange) spot trading. CoinbaseAPI.h is a file which implements and handles the programmatic interaction with Coinbase's Advanced Trade API. It searches your path variables for the public API key tied to your account, and a secret.pem file which holds your secret one.  
   
-Realtime Data Pipeline  
-- Meka needs food, and that food is data. That's why a pipeline is needed.  
-- Coinbase websocket is used to receive raw trade data. That data is parsed and aggregated into 1m candles.  
-- The pipeline is multithreaded and a bit heavy on resources. It also features IPC with python for data visualization.  
+I wrap the coinbaseAPI with an account manager, which includes my built in risk management system, allowing Meka to trade and bankroll manage an account. The bankroll management is designed to flatten the curve on losing streaks and exponentially increase profits on winning streaks. This is done through adjusting risk after trades. The downside is, this form of bankroll management requires leverage is bind the account to one trade at a time.  
+    
+# Crypto Pipeline  
+I built an overkill pipeline to stream crypto data. This is where my system started, just as a pipeline to recieve, parse, and store live data.  
   
-Strategy Backtester  
-- Meka will execute based off algorithmic strategies, and the backtester is here to test those strategies.  
-- The backtester will download and test on Binance's historical candle data. Downloaded assets are automatically cleaned up.  
-- It is assumed that leverage exists, and is necessary for the bankroll management that Meka and the Backtester will follow.  
+It uses Coinbase's websockets, and is multithreaded for more throughput. The pipeline follows the order:  
+Websocket -> Parser -> Aggregator -> (async logger/database)  
+  
+I've managed to lower the latency from ~500miliseconds to ~80microseconds. I am using very quick lock free queues around 4 threads for the pipeline, but ultimately don't need this much speed/throughput.  
+  
+# Backtester  
+To test strategies for Meka, I first built a backtester which will run trading stragies through years worth of historical data. This part of my system downloads historical candle data from Binance. It also simulates the bankroll management that Meka will use. The backtester does not simulate off of actual fills, it just assumes that it will get the fill. I might change this in the future, or might not. Haven't decided yet.  
+  
+# Compatibility  
+Windows and Linux supported.
