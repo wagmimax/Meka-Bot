@@ -1,15 +1,15 @@
-#pragma once
+#ifndef BOT_COINBASEAPI_H
+#define BOT_COINBASEAPI_H
 #define NOMINMAX    // windows min max macros break everything
 #include<string>
 #include"jwt/jwt.hpp"
 #include"openssl/rand.h"
 #include"curlcpp/curl_easy.h"   
 #include "boost/uuid/uuid.hpp"
-#include "boost/uuid/uuid_generators.hpp"
+#include "boost/uuid/uuid_generators.hpp" // not sure why this is getting detected as not used? line 110 breaks without this include
 #include "boost/uuid/uuid_io.hpp"
 #include "Backtester/Strategy.h"
 #include "simdjson.h"
-#include<fstream>
 #include<iostream>
 #include<format>
 #include<list>
@@ -242,3 +242,5 @@ private:
     const std::string key_secret;
     const std::string url = "api.coinbase.com";
 };
+
+#endif // BOT_COINBASEAPI_H

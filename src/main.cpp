@@ -54,7 +54,7 @@ int main() {
             Meka meka;
             
             Pipeline pipeline;
-            pipeline.start(std::thread(&Meka::start, &meka, std::ref(coinFlip), std::ref(api), std::ref(man)));
+            pipeline.start(std::thread(&Meka::start, &meka, std::ref(coinFlip), std::ref(man)));
         }break;
     }
 }

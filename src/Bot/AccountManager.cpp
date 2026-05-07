@@ -1,7 +1,7 @@
 #include<Bot/AccountManager.h>
 
 
-AccountManager::AccountManager(CoinbaseAPI& api): balance_(5), currentRisk_(2.0), RR_(3), wins(0), losses(0), DEBUGGING_ON(false) {
+AccountManager::AccountManager(CoinbaseAPI& api): api_(api), balance_(5), currentRisk_(2.0), RR_(3), wins(0), losses(0), DEBUGGING_ON(false) {
     riskLevels[2.0] = balance_; 
     riskLevels[1.0] = balance_;
     riskLevels[0.5] = balance_;
@@ -17,7 +17,7 @@ AccountManager::AccountManager(CoinbaseAPI& api): balance_(5), currentRisk_(2.0)
 }
 
 // places a trade. returns empty string if unsuccessful fill
-std::string AccountManager::placeTrade(CoinbaseAPI& api, Trade& trade) {
+std::string AccountManager::placeTrade(Trade& trade) {
 
 
     double totalFees = makerFees_ + takerFees_;
@@ -44,13 +44,24 @@ std::string AccountManager::placeTrade(CoinbaseAPI& api, Trade& trade) {
     std::cout << "SL: " << stopLossPrice << std::endl;
     std::cout << "TP: " << targetProfitPrice << std::endl;
 
-    std::string order_id = api.createOrder("ETH-USD", trade.tradeIntent, positionSize, trade.entryLevel, stopLossPrice, targetProfitPrice);
+    std::string order_id = api_.createOrder("ETH-USD", trade.tradeIntent, positionSize, trade.entryLevel, stopLossPrice, targetProfitPrice);
 
     std::cout << "ACCOUNT MANAGER PLACED TRADE, WAITING RESULTS...\n";
     // trades are open for 60 seconds, we check them after 70 seconds to see whether we got filled
     std::this_thread::sleep_for(std::chrono::seconds(70));
     std::cout << "FETCHING RESULTS...\n";
-    return (api.getOrder(order_id) == "OPEN") ? order_id : "";
+    return (api_.getOrder(order_id) == "OPEN") ? order_id : "";
+}
+
+void AccountManager::monitorTrade(std::string_view order_id) {
+    while(true) {
+
+        if(api_.getOrder(order_id) == "FILLED") {
+            return;
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(30)); 
+    }
 }
 
 void AccountManager::adjustRisk()
